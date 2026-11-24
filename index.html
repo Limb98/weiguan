@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="为官一任">
+<meta name="application-name" content="为官一任">
+<meta name="theme-color" content="#F5F1E6">
+<title>为官一任</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icon/icon-192.png">
+<style>
+/* ============ 基础 ============ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans SC",sans-serif;background:#F5F1E6;color:#33302A;line-height:1.65;
+  -webkit-font-smoothing:antialiased;min-height:100vh}
+button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit}
+input,select{font-family:inherit;font-size:1rem}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#C9BFA6;border-radius:4px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ============ 封面 ============ */
+#cover{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:24px 16px;
+  background:linear-gradient(180deg,#EDE6D3 0%,#F5F1E6 45%,#EAE2CC 100%)}
+#cover.hide{display:none}
+.cover-inner{max-width:560px;width:100%;text-align:center}
+.cover-art{width:100%;max-width:480px;margin:0 auto 10px;display:block;border-radius:10px;
+  box-shadow:0 6px 26px rgba(90,70,40,.22);border:1px solid #D8CDAA}
+.cover-eyebrow{letter-spacing:.35em;font-size:.8rem;color:#8A7F66;margin-bottom:6px}
+.cover-title{font-family:"STZhongsong","SimSun","Noto Serif SC",serif;font-size:2.6rem;letter-spacing:.18em;color:#8E2424;margin-bottom:4px}
+.cover-sub{font-family:"STZhongsong","SimSun","Noto Serif SC",serif;font-size:1.02rem;color:#5C5340;letter-spacing:.12em;margin-bottom:16px}
+.cover-desc{background:rgba(253,251,244,.85);border:1px solid #DCD2B8;border-radius:8px;padding:14px 16px;text-align:left;
+  font-size:.92rem;color:#4A463C;margin-bottom:18px}
+.cover-desc p{margin-bottom:4px}
+.cover-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+.cover-note{font-size:.78rem;color:#9A9078;margin-top:14px}
+
+/* ============ 按钮 ============ */
+.btn{display:inline-block;border-radius:7px;padding:10px 18px;font-size:.95rem;border:1px solid transparent;transition:.15s;line-height:1.3}
+.btn:active{transform:translateY(1px)}
+.btn-main{background:#8E2424;color:#FFF8EC}
+.btn-main:hover{background:#A32C2C}
+.btn-blue{background:#274C77;color:#F4F8F0}
+.btn-blue:hover{background:#315C8D}
+.btn-ghost{background:#FDFBF5;border-color:#C8Bda2;color:#4A463C}
+.btn-ghost:hover{border-color:#8E2424;color:#8E2424}
+.btn-danger{background:#FDFBF5;border-color:#C0392B;color:#C0392B}
+.btn-danger:hover{background:#C0392B;color:#fff}
+.btn[disabled]{opacity:.42;cursor:not-allowed;transform:none!important}
+.btn-sm{padding:6px 12px;font-size:.85rem;border-radius:6px}
+
+/* ============ 游戏主界面 ============ */
+#game{display:none;min-height:100vh;padding-bottom:40px}
+#game.on{display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 14px}
+.g-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:16px 0 8px;border-bottom:3px double #C9BFA6}
+.g-head .org{font-family:"STZhongsong","SimSun",serif;font-size:1.35rem;color:#8E2424;letter-spacing:.1em}
+.g-head .org small{font-size:.82rem;color:#8A7F66;letter-spacing:.06em;margin-left:8px;font-family:inherit}
+.g-status{display:flex;flex-wrap:wrap;gap:8px 22px;padding:9px 2px;font-size:.85rem;color:#5C5340;border-bottom:1px solid #DCD2B8}
+.g-status b{color:#33302A;font-weight:600}
+.g-status .wind{color:#274C77}
+.g-status .warn{color:#C0392B}
+.stat-cards{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:12px 0}
+.stat-card{background:#FDFBF5;border:1px solid #DCD2B8;border-radius:8px;padding:9px 12px;position:relative;overflow:hidden}
+.stat-card h4{font-size:.76rem;color:#8A7F66;font-weight:normal;letter-spacing:.05em;margin-bottom:2px}
+.stat-card .v{font-size:1.12rem;font-weight:700;color:#33302A;font-family:Georgia,"Noto Serif SC",serif}
+.stat-card .sub{font-size:.72rem;color:#A99F86}
+.stat-card.bad .v{color:#C0392B}
+.stat-card.good .v{color:#1E7A45}
+
+/* ============ 导航 ============ */
+.g-nav-wrap{position:relative;margin-bottom:14px}
+.g-nav-wrap::after{content:'';position:absolute;right:0;top:8px;bottom:10px;width:30px;background:linear-gradient(90deg,rgba(245,241,230,0),#F5F1E6);pointer-events:none}
+.g-nav{display:flex;gap:4px;overflow-x:auto;padding:8px 0;border-bottom:2px solid #C9BFA6;scrollbar-width:none}
+.g-nav::-webkit-scrollbar{display:none}
+.g-nav button{flex:none;padding:8px 15px;font-size:.92rem;color:#5C5340;border-radius:7px 7px 0 0;position:relative;white-space:nowrap}
+.g-nav button:hover{color:#8E2424;background:rgba(142,36,36,.06)}
+.g-nav button.on{color:#8E2424;font-weight:700}
+.g-nav button.on::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:3px;background:#8E2424;border-radius:2px}
+
+/* ============ 主体两栏 ============ */
+.g-body{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+.g-main{min-width:0}
+.g-aside{position:sticky;top:12px;display:flex;flex-direction:column;gap:12px}
+@media (max-width:920px){
+  .g-body{grid-template-columns:1fr}
+  .g-aside{position:static}
+  .stat-cards{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ============ 面板 ============ */
+.panel{background:#FDFBF5;border:1px solid #DCD2B8;border-radius:9px;padding:15px 16px;margin-bottom:14px}
+.panel-h{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.panel-h .bar-mark{width:4px;height:18px;background:#8E2424;border-radius:2px}
+.panel-h h3{font-family:"STZhongsong","SimSun",serif;font-size:1.06rem;color:#33302A;letter-spacing:.05em}
+.panel-h .hint{margin-left:auto;font-size:.76rem;color:#A99F86}
+.panel p.desc{font-size:.86rem;color:#6B6455;margin-bottom:10px}
+.panel p.rule{font-size:.8rem;color:#8A7F66;background:#F4EFE1;border-radius:6px;padding:8px 10px;margin-bottom:10px}
+
+/* 通用行式组件 */
+.kv{width:100%;border-collapse:collapse;font-size:.86rem}
+.kv td{padding:7px 8px;border-bottom:1px dashed #E2D9C2;vertical-align:top}
+.kv td:first-child{color:#8A7F66;white-space:nowrap;width:1%}
+.kv tr:last-child td{border-bottom:none}
+table.grid{width:100%;border-collapse:collapse;font-size:.84rem;margin:6px 0}
+table.grid th{background:#F0EADA;color:#6B6455;font-weight:600;padding:8px 9px;text-align:left;border:1px solid #E0D6BC}
+table.grid td{padding:8px 9px;border:1px solid #E0D6BC;vertical-align:top}
+table.grid td.num{text-align:right;font-variant-numeric:tabular-nums}
+.bar{height:7px;background:#EAE3CE;border-radius:4px;overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:#274C77;border-radius:4px;transition:width .3s}
+.bar i.r{background:#C0392B}
+.bar i.g{background:#1E7A45}
+.rowline{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 2px;border-bottom:1px dashed #E2D9C2;font-size:.88rem;flex-wrap:wrap}
+.rowline:last-child{border-bottom:none}
+.rowline .t{min-width:110px;color:#33302A;font-weight:600}
+.rowline .m{color:#6B6455;font-size:.8rem;flex:1;min-width:120px}
+.muted{color:#8A7F66;font-size:.78rem}
+.red{color:#C0392B}.green{color:#1E7A45}.blue{color:#274C77}
+.tag{display:inline-block;font-size:.7rem;border-radius:5px;padding:1px 8px;border:1px solid #C9BFA6;color:#6B6455;background:#F6F1E2;margin-left:6px;vertical-align:middle}
+.tag.hot{border-color:#E8B4AD;background:#FBEDEA;color:#B03A2E}
+.tag.ok{border-color:#A9D3B8;background:#ECF7EF;color:#1E7A45}
+.card-select{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.pick{border:2px solid #E0D6BC;border-radius:9px;padding:11px 13px;cursor:pointer;transition:.15s;background:#fff}
+.pick:hover{border-color:#B9AE8E}
+.pick.on{border-color:#8E2424;background:#FCF6EE;box-shadow:0 2px 10px rgba(142,36,36,.12)}
+.pick h5{font-size:.94rem;color:#33302A;margin-bottom:3px}
+.pick .meta{font-size:.76rem;color:#8A7F66}
+.pick .eff{font-size:.78rem;color:#1E7A45;margin-top:5px}
+.pick.dis{opacity:.55;cursor:not-allowed}
+.pick .why{font-size:.72rem;color:#C0392B;margin-top:4px}
+.hr{border:none;border-top:1px solid #E2D9C2;margin:12px 0}
+
+/* ============ 侧栏 ============ */
+.aside-box{background:#FDFBF5;border:1px solid #DCD2B8;border-radius:9px;padding:13px}
+.aside-box h4{font-size:.9rem;color:#33302A;margin-bottom:8px;font-family:"STZhongsong","SimSun",serif;letter-spacing:.05em}
+.btn-next{width:100%;background:#274C77;color:#F4F8F0;font-size:1.06rem;padding:13px;border-radius:8px;font-weight:700;letter-spacing:.4em;text-indent:.4em}
+.btn-next:hover{background:#315C8D}
+.btn-next[disabled]{opacity:.45}
+.next-est{font-size:.76rem;color:#8A7F66;margin-top:7px;line-height:1.5}
+.log-box{max-height:220px;overflow-y:auto;font-size:.78rem;color:#5C5340;line-height:1.7}
+.log-box p{padding:3px 0;border-bottom:1px dashed #EDE5CF}
+.log-box p:last-child{border-bottom:none}
+.save-btns{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.save-btns .btn{font-size:.82rem;text-align:center;padding:8px 4px}
+.author{font-size:.72rem;color:#B3A88D;text-align:center;margin-top:4px}
+
+/* ============ 弹窗 ============ */
+.dlg-mask{position:fixed;inset:0;background:rgba(40,32,18,.45);backdrop-filter:blur(2px);z-index:80;display:none;
+  align-items:center;justify-content:center;padding:18px;overflow-y:auto}
+.dlg-mask.on{display:flex}
+.dlg{background:#FDFBF5;border-radius:12px;max-width:560px;width:100%;padding:22px 24px;position:relative;
+  animation:pop .22s ease;box-shadow:0 20px 60px rgba(40,30,10,.35);margin:auto}
+@keyframes pop{from{transform:translateY(14px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.dlg .eyebrow{font-size:.76rem;color:#8A7F66;letter-spacing:.3em;margin-bottom:4px;text-align:center}
+.dlg h2{font-family:"STZhongsong","SimSun",serif;font-size:1.5rem;color:#8E2424;text-align:center;letter-spacing:.14em;margin-bottom:6px}
+.dlg .file-line{border:none;border-top:2px solid #8E2424;margin:10px 0 14px}
+.dlg h2.plain{color:#33302A}
+.dlg p.body{font-size:.92rem;color:#3E3A31;margin-bottom:8px;text-indent:2em}
+.dlg .sign{position:relative;display:flex;justify-content:flex-end;align-items:center;gap:18px;margin-top:16px;padding-right:52px}
+.dlg .sign .txt{text-align:right;font-size:.88rem;color:#3E3A31}
+.seal{width:78px;height:78px;border:3px solid rgba(192,57,43,.85);border-radius:50%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;color:rgba(192,57,43,.9);transform:rotate(-10deg);flex:none;
+  position:absolute;right:2px;bottom:-8px;opacity:.82;background:transparent;pointer-events:none}
+.seal .s1{font-size:.62rem;letter-spacing:.1em}
+.seal .star{color:rgba(192,57,43,.95);font-size:1.05rem;line-height:1.1}
+.seal .s2{font-size:.62rem;letter-spacing:.1em}
+.dlg-btns{display:flex;gap:10px;margin-top:18px}
+.dlg-btns .btn{flex:1;text-align:center}
+.dlg .close-x{position:absolute;right:12px;top:10px;font-size:1.3rem;color:#A99F86;padding:4px 8px}
+.dlg .close-x:hover{color:#33302A}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.82rem;color:#6B6455;margin-bottom:6px}
+.field label em{color:#C0392B;font-style:normal}
+.field input{width:100%;border:1px solid #C8BDA2;border-radius:7px;padding:10px 12px;background:#fff;font-size:1rem}
+.field input:focus{outline:none;border-color:#8E2424}
+.field .inline{display:flex;gap:8px}
+.err{color:#C0392B;font-size:.78rem;min-height:1em;margin-top:4px}
+.dlg ul.plain{margin:8px 0 0 1.2em;font-size:.88rem;color:#3E3A31}
+.dlg ul.plain li{margin-bottom:5px}
+
+/* 事件弹窗选项 */
+.ev-opts{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+.ev-opt{text-align:left;border:2px solid #D8CDB2;background:#fff;border-radius:8px;padding:12px 14px;transition:.15s}
+.ev-opt:hover{border-color:#8E2424;background:#FCF6EE}
+.ev-opt .oh{font-size:.95rem;font-weight:700;color:#33302A;margin-bottom:2px}
+.ev-opt .od{font-size:.8rem;color:#6B6455}
+.ev-opt .oc{font-size:.72rem;color:#274C77;margin-top:3px}
+
+/* 结局 */
+.end-score{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:14px 0}
+.end-score .cell{background:#F4EFE1;border-radius:8px;padding:9px;text-align:center}
+.end-score .cell h5{font-size:.72rem;color:#8A7F66;font-weight:normal}
+.end-score .cell .n{font-size:1.25rem;font-weight:700;font-family:Georgia,serif}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:44px;transform:translateX(-50%);z-index:99;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
+.toast{background:rgba(45,38,26,.92);color:#F5F1E6;font-size:.86rem;padding:9px 18px;border-radius:20px;animation:tin .25s ease;max-width:86vw}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* 走马灯式月报 */
+.settle-list{font-size:.85rem;color:#4A463C}
+.settle-list .row{display:flex;justify-content:space-between;padding:5px 2px;border-bottom:1px dashed #E2D9C2}
+.settle-list .row b{font-variant-numeric:tabular-nums}
+
+/* 档案页时间线 */
+.timeline{position:relative;padding-left:20px}
+.timeline::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:#DCD2B8}
+.timeline .tl-item{position:relative;padding:0 0 12px}
+.timeline .tl-item::before{content:"";position:absolute;left:-19px;top:7px;width:8px;height:8px;background:#8E2424;border-radius:50%}
+.timeline .tl-item .tl-t{font-size:.76rem;color:#A99F86}
+.timeline .tl-item .tl-c{font-size:.86rem;color:#4A463C}
+
+/* 图章头图 */
+.hero-art{border-radius:8px;overflow:hidden;border:1px solid #DCD2B8;margin-bottom:6px;background:#EDE6D3}
+.hero-art svg{display:block;width:100%;height:auto}
+.hero-cap{font-size:.74rem;color:#A99F86;margin-bottom:12px;text-align:right}
+
+/* 成就/排行 */
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.ach{border:1px solid #E0D6BC;border-radius:8px;padding:10px 12px;background:#fff}
+.ach.locked{opacity:.5;background:#F4EFE1}
+.ach h5{font-size:.9rem;margin-bottom:2px}
+.ach p{font-size:.76rem;color:#8A7F66}
+.rank-row{display:flex;justify-content:space-between;font-size:.86rem;padding:8px 2px;border-bottom:1px dashed #E2D9C2}
+
+/* 移动端安装横幅 */
+#ios-tip{display:none;position:fixed;left:12px;right:12px;bottom:12px;z-index:70;background:#FDFBF5;border:2px solid #8E2424;
+  border-radius:10px;padding:12px 14px;font-size:.82rem;color:#4A463C;box-shadow:0 10px 30px rgba(40,30,10,.3)}
+#ios-tip.on{display:block}
+#ios-tip b{color:#8E2424}
+#ios-tip button{position:absolute;right:8px;top:6px;font-size:1rem;color:#A99F86}
+
+/* 移动端底栏快捷 */
+.m-bottom{display:none}
+@media (max-width:920px){
+  .m-bottom{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;background:#F5F1E6;border-top:1px solid #D8CDB2;
+    padding:8px 12px;gap:10px;align-items:center}
+  .m-bottom .btn{flex:1;padding:11px 6px;font-size:.92rem}
+  .m-bottom .btn-blue{font-weight:700;letter-spacing:.3em;text-indent:.3em}
+  #game{padding-bottom:76px}
+  .g-head .org{font-size:1.1rem}
+}
+@media (max-width:420px){
+  .cover-title{font-size:2.1rem}
+  .stat-cards{grid-template-columns:repeat(2,1fr)}
+  .g-status{gap:6px 14px;font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= 封面 ================= -->
+<div id="cover">
+  <div class="cover-inner">
+    <div class="cover-eyebrow">宁川省 · 临州县 · 架空背景</div>
+    <h1 class="cover-title">为官一任</h1>
+    <div class="cover-sub">地方主政者生涯模拟</div>
+    <svg class="cover-art" viewBox="0 0 480 200" xmlns="http://www.w3.org/2000/svg" aria-label="山区乡镇水墨意境图">
+      <rect width="480" height="200" fill="#EDE6D3"/>
+      <path d="M0 128 Q60 62 128 108 Q170 84 208 118 Q258 54 322 104 Q380 70 480 122 L480 200 L0 200 Z" fill="#CFC6A8" opacity=".85"/>
+      <path d="M0 148 Q90 108 190 136 Q300 92 380 130 Q430 118 480 142 L480 200 L0 200 Z" fill="#B9AE8E" opacity=".9"/>
+      <path d="M0 200 L0 170 Q120 150 240 168 Q360 184 480 158 L480 200 Z" fill="#9AA98C" opacity=".95"/>
+      <path d="M40 172 Q240 138 470 158" stroke="#5E7B8C" stroke-width="7" fill="none" opacity=".65" stroke-linecap="round"/>
+      <g opacity=".92">
+        <rect x="196" y="128" width="26" height="16" fill="#8A7A5C"/><path d="M196 128 L209 118 L222 128 Z" fill="#6E5F42"/>
+        <rect x="230" y="132" width="20" height="12" fill="#96856B"/><path d="M230 132 L240 124 L250 132 Z" fill="#7A6A4C"/>
+        <rect x="172" y="134" width="17" height="10" fill="#8A7A5C"/><path d="M172 134 L180.5 127 L189 134 Z" fill="#6E5F42"/>
+        <rect x="278" y="126" width="30" height="18" fill="#8F7F60"/><path d="M278 126 L293 114 L308 126 Z" fill="#72624A"/>
+      </g>
+      <path d="M252 158 Q266 148 280 158" stroke="none" fill="none"/>
+      <rect x="214" y="146" width="52" height="5" rx="2" fill="#8A6F4D"/>
+      <rect x="216" y="151" width="3" height="14" fill="#8A6F4D"/><rect x="261" y="151" width="3" height="14" fill="#8A6F4D"/>
+      <circle cx="390" cy="44" r="16" fill="#E8D9A8" opacity=".9"/>
+      <path d="M30 30 q8 -10 16 0 q8 -10 16 0" stroke="#FFFFFF" stroke-width="0" fill="none"/>
+    </svg>
+    <div class="cover-desc">
+      <p>你三十一岁，组织安排你到云溪镇任职。财政所送来账本：结余一百六十万元，工资、运转、民生支出都要按月付。</p>
+      <p>镇上学位不够、病床紧张，年轻人外出打工。山是绿的，账是空的。每月你要定工作安排，决定先修哪条路、先招哪个厂。</p>
+    </div>
+    <div class="cover-btns">
+      <button class="btn btn-main" id="btn-new">新开局</button>
+      <button class="btn btn-ghost" id="btn-load">读取存档</button>
+    </div>
+    <button class="btn btn-blue btn-sm" id="btn-install-cover">安装到桌面，像 App 一样打开</button>
+    <div class="cover-note">架空背景，所有地名、人物、事件均为虚构。<br>制作人：星辰 · 微信关注「星辰超级智能体」</div>
+  </div>
+</div>
+
+<!-- ================= 游戏界面 ================= -->
+<div id="game">
+  <div class="wrap">
+    <div class="g-head">
+      <div class="org"><span id="h-org">云溪镇人民政府</span><small>主政者工作台</small></div>
+      <div class="muted" id="h-term"></div>
+    </div>
+    <div class="g-status" id="status-bar"></div>
+    <div class="stat-cards" id="stat-cards"></div>
+    <div class="g-nav-wrap"><nav class="g-nav" id="nav"></nav></div>
+    <div class="g-body">
+      <div class="g-main" id="main"></div>
+      <aside class="g-aside">
+        <div class="aside-box">
+          <button class="btn btn-next" id="btn-next">下月</button>
+          <div class="next-est" id="next-est"></div>
+        </div>
+        <div class="aside-box">
+          <h4>月度账目</h4>
+          <div class="muted" id="month-ledger">点「下月」推进时间，结算后在此显示本月账目。</div>
+        </div>
+        <div class="aside-box">
+          <h4>工作日志</h4>
+          <div class="log-box" id="log-box"></div>
+        </div>
+        <div class="aside-box">
+          <h4>存档</h4>
+          <div class="save-btns">
+            <button class="btn btn-ghost" id="btn-save">保存</button>
+            <button class="btn btn-ghost" id="btn-export">导出存档</button>
+            <button class="btn btn-ghost" id="btn-import">导入存档</button>
+            <button class="btn btn-danger" id="btn-restart">重新开局</button>
+            <button class="btn btn-blue" id="btn-install" style="grid-column:1/-1">安装到桌面</button>
+          </div>
+          <input type="file" id="file-import" accept=".json,application/json" style="display:none">
+        </div>
+        <div class="author">制作人：星辰 · 本作为架空虚构作品</div>
+      </aside>
+    </div>
+  </div>
+  <div class="m-bottom">
+    <button class="btn btn-ghost" onclick="toggleNav()">目录</button>
+    <button class="btn btn-blue" onclick="document.getElementById('btn-next').click()">下月</button>
+    <button class="btn btn-ghost" onclick="window.scrollTo({top:0,behavior:'smooth'})">顶部</button>
+  </div>
+</div>
+
+<!-- ================= 弹窗容器 ================= -->
+<div class="dlg-mask" id="dlg-mask">
+  <div class="dlg" id="dlg"></div>
+</div>
+
+<div id="ios-tip">
+  <b>把《为官一任》装到桌面：</b>点浏览器底部「分享」按钮，选「添加到主屏幕」，即可像 App 一样全屏打开，离线也能玩，存档留在本机。
+  <button onclick="hideIosTip()">×</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ================= 数据层 ================= */
+'use strict';
+const SAVE_KEY='wyrm_save_v1';
+const BOARD_KEY='wyrm_board_v1';
+const INSTALL_KEY='wyrm_install_prompted';
+const SURNAMES='赵钱孙李周吴郑王冯陈褚卫蒋沈韩杨朱秦许何吕施张孔曹严华金魏陶姜';
+const GIVEN=['承志','明远','若谷','安澜','正廷','敬修','知行','向阳','怀瑾','景行','清让','厚朴','维新','守拙','立诚','致远','闻达','弘毅','秉文','乐水','见山','砚秋','长青','望舒','南乔','听松','少川','云帆','静之'];
+function randName(){const s=SURNAMES[Math.floor(Math.random()*SURNAMES.length)];const g=GIVEN[Math.floor(Math.random()*GIVEN.length)];return s+g;}
+const DEFAULT_PLACES=['云溪','临州','宁川']; // 镇、县、省
+/* 月名 */
+const MONTHS=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+const MONTH_EVENTS={1:'两会',3:'环保绿化月',6:'主汛期',7:'主汛期',9:'开学季',12:'年度考核'};
+
+/* 风向（考核权重），每年一月刷新 */
+const WINDS=[
+ {id:'econ',name:'拼经济',years:2,weights:{pros:66,live:20,sat:14},desc:'繁荣度权重 66%，宜居 20%，满意 14%；债务扣分系数 0.5'},
+ {id:'eco',name:'守青山',years:2,weights:{env:50,pros:24,live:16,sat:10},desc:'环境权重 50%；污染项目考核重扣；债务扣分系数 0.8'},
+ {id:'live',name:'惠民生',years:2,weights:{live:44,sat:34,pros:22},desc:'宜居与满意合计 78%；学位医疗缺口重扣'},
+ {id:'debt',name:'过紧日子',years:2,weights:{pros:40,live:20,sat:12,debtK:1.6},desc:'债务与楼堂馆所重扣；举债需县里会审'},
+];
+/* 档案职级序列 */
+const RANK_LADDER=['乡科级副职','乡科级正职','县处级副职'];
+/* 建设项目库 cost 造价/万，dur 工期月，eff 效果描述 */
+const PROJECTS=[
+ {id:'school',name:'镇中心小学扩建',cost:240,dur:6,cat:'民生',eff:'学位覆盖 +18%',add:{seat:18},note:'新增教学楼与食堂，缓解大班额。'},
+ {id:'clinic',name:'镇卫生院住院楼',cost:360,dur:9,cat:'民生',eff:'医疗覆盖 +20%',add:{med:20},note:'新增病床六十张，常见病不出镇。'},
+ {id:'road',name:'环镇道路硬化改造',cost:160,dur:5,cat:'基建',eff:'道路通达 +15%',add:{road:15},note:'打通三个行政村的最后四公里。',cap:1},
+ {id:'pipe',name:'镇区供排水管网',cost:320,dur:8,cat:'基建',eff:'解锁住宅开发 · 宜居 +5',add:{live:5},unlock:'housing',note:'先有管网，才有安居。'},
+ {id:'sewage',name:'云溪污水处理厂',cost:400,dur:10,cat:'基建',eff:'污水容量 +2.0 · 环境改善',add:{sewCap:2},note:'尾水不再直排云溪河。',cap:1},
+ {id:'park',name:'小微创业园标准厂房',cost:460,dur:12,cat:'产业',eff:'招商容量 +1 · 企业拎包落地',add:{},note:'筑巢引凤。',cap:1},
+ {id:'market',name:'农贸市场提升改造',cost:120,dur:4,cat:'民生',eff:'就业 +3% · 繁荣 +3',add:{job:3,pros:3},note:'晴天一身灰、雨天一身泥成为历史。'},
+ {id:'green',name:'滨河公园一期',cost:200,dur:6,cat:'生态',eff:'宜居 +6',add:{live:6},note:'茶余饭后，群众有个去处。'},
+ {id:'oldtown',name:'老旧小区改造',cost:340,dur:8,cat:'民生',eff:'宜居 +8 · 满意 +4',add:{live:8,sat:4},note:'防水、管线、外立面一次到位。'},
+ {id:'pv',name:'荒坡光伏电站',cost:280,dur:8,cat:'产业',eff:'电容量 +1.5 · 月经营收入 +9万',add:{elecCap:1.5},note:'闲置荒坡生出现金流。'},
+ {id:'water',name:'水厂扩容工程',cost:240,dur:7,cat:'基建',eff:'水容量 +1.5',add:{waterCap:1.5},note:'高峰期不再定时供水。',cap:1},
+ {id:'tapwater',name:'偏远村自来水入户',cost:180,dur:6,cat:'民生',eff:'宜居 +4 · 满意 +3',add:{live:4,sat:3},note:'结束肩挑背驮吃水难。',cap:1},
+];
+/* 招商企业库 invest 投资/万 tax 月税收/万 job 就业岗位数 poll 污染等级 needPrereq 前置项目 */
+const BIZ=[
+ {id:'mushroom',name:'山珍菌菇加工厂',inv:200,tax:15,job:150,poll:0,cat:'低污染',need:[],note:'带动周边农户林下种植。'},
+ {id:'tea',name:'云雾茶精制车间',inv:180,tax:12,job:110,poll:0,cat:'低污染',need:[],note:'老茶山接上新市场。'},
+ {id:'ecom',name:'电商仓储分拨中心',inv:260,tax:18,job:120,poll:0,cat:'低污染',need:['road'],note:'山货出山，快递进村。'},
+ {id:'motel',name:'云溪民宿集群',inv:300,tax:20,job:90,poll:0,cat:'商服',need:['road','green'],condEnv:60,note:'生态变生意，需要好山水（环境≥60）。'},
+ {id:'plywood',name:'竹木胶合板厂',inv:400,tax:30,job:260,poll:1,cat:'中污染',need:[],note:'需综合产业片区落地。'},
+ {id:'casting',name:'精密铸造车间',inv:520,tax:38,job:340,poll:1,cat:'中污染',need:['pv'],note:'耗电大户，需光伏电站配套。'},
+ {id:'galv',name:'电镀表面处理园',inv:800,tax:70,job:500,poll:2,cat:'高污染',need:['sewage'],note:'必须污水厂建成才可落地，县里会审。'},
+];
+/* 住宅 */
+const HOUSE=[
+ {id:'gangxu',name:'刚需安置房',cost:380,dur:6,sale:620,note:'先管网后建宅。'},
+ {id:'gaishan',name:'滨河改善盘',cost:560,dur:9,sale:900,note:'房价压力随销售抬升。'},
+];
+/* 产业片区准入 */
+const ZONES={
+ low:{name:'低污染片区',allow:[0]},
+ mix:{name:'综合产业片区',allow:[0,1]},
+ lim:{name:'限制工业片区',allow:[0,1],banHeavy:true},
+ eco:{name:'生态红线区',allow:[],note:'禁止工业项目落地'},
+};
+/* 班子成员 */
+const CADRES=[
+ {id:'zhou',name:'周敬儒',age:58,role:'党委书记',spec:'全面',desc:'快到点了，求稳。'},
+ {id:'ma',name:'马向东',age:47,role:'副镇长（分管城建）',spec:'城建',desc:'修路盖房是把好手，认进度不认人。'},
+ {id:'wu',name:'吴春霞',age:45,role:'副镇长（分管农业）',spec:'农业',desc:'农业农村经验足，嗓门大心也细。'},
+ {id:'lin',name:'林一帆',age:40,role:'党委副书记',spec:'党群',desc:'材料写得好，前途看着比你亮。'},
+ {id:'he',name:'何清源',age:50,role:'纪委书记',spec:'纪检',desc:'眼里不揉沙子，账目他盯得最紧。'},
+];
+/* 月度主工作选项 */
+const WORKS=[
+ {id:'routine',name:'常规办公',desc:'批文、开会、下乡。保运转，不出错。',eff:'小概率群众好评',cost:0},
+ {id:'attract',name:'外出招商',desc:'带队跑展会、访企业。',eff:'本月招商成功率 +30%',cost:8},
+ {id:'report',name:'向上汇报',desc:'去县里汇报对接，争取支持。',eff:'上级好感 +6',cost:4},
+ {id:'team',name:'班子谈心',desc:'逐个找班子成员谈话。',eff:'班子团结 +8',cost:2},
+ {id:'grass',name:'驻村蹲点',desc:'进村入户听意见，现场办公。',eff:'满意度 +3 · 声誉 +2',cost:3},
+ {id:'study',name:'专题学习班',desc:'参加县里组织的学习研讨。',eff:'声誉 +4 · 上级好感 +2',cost:3},
+];
+/* 随机事件池 month 可空=全年 */
+const EVENTS=[
+ {id:'petition',title:'镇口的信访',body:'十几位村民围着政府大门，反映采石场夜运噪音扬尘，庄稼蒙灰。领头的说：再没人管，就去县里。',months:null,opts:[
+   {t:'现场接访，承诺限期整治',d:'立军令状，整治期间夜运停运',c:'声誉+2 满意+3',fx:{sat:3,rep:2},cost:8},
+   {t:'登记台账，按流程走',d:'转交分管线办理，程序稳妥',c:'满意+1',fx:{sat:1},cost:2},
+   {t:'让派出所先把人劝散',d:'快，但传出去不好听',c:'满意-4 倒查+3%',fx:{sat:-4,risk:3},cost:0},
+ ]},
+ {id:'audit',title:'县审计局来了',body:'审计组进驻查账，重点看工程款与专项资金。账目清楚，是过这一关的唯一办法。',months:null,opts:[
+   {t:'全案卷开放，随查随给',d:'这几天别的什么都放一放',c:'若债务低：上级好感+5',fx:{audit:'open'}},
+   {t:'只给台账原件，不陪同',d:'省事，但显得心虚',c:'倒查+4%',fx:{risk:4}},
+ ]},
+ {id:'bossVisit',title:'县委书记调研',body:'县委书记不打招呼进镇，看了河堤和农贸市场，让你当面汇报今年思路。',months:null,opts:[
+   {t:'如实汇报，问题一起讲',d:'成绩讲三条，困难讲五条',c:'上级好感+6 声誉+3',fx:{boss:6,rep:3}},
+   {t:'多讲成绩，困难点到为止',d:'气氛好，风险小',c:'上级好感+3',fx:{boss:3}},
+ ]},
+ {id:'flood',title:'连夜暴雨',body:'云溪河水位一小时涨了半米，低洼村道开始进水，防汛喇叭劈了嗓子。',months:[6,7],opts:[
+   {t:'全体上堤，通宵值守',d:'干部群众齐上，堵住管涌',c:'人员安全·满意度+4',fx:{sat:4,rep:2},cost:6},
+   {t:'转移群众优先',d:'先撤人，后保物',c:'满意度+2 房产损失小',fx:{sat:2},cost:8},
+ ]},
+ {id:'gift',title:'客商的茶叶罐',body:'一个想拿地块的客商临走塞下两罐「土特产」，罐底压着购物卡。何清源恰好路过停车场。',months:null,opts:[
+   {t:'当面退回，说清规矩',d:'生意照谈，规矩在前',c:'声誉+5 廉政无虞',fx:{rep:5,clean:1}},
+   {t:'先收下再上交纪委',d:'程序没问题，但味道总归不对',c:'声誉+2 倒查+2%',fx:{rep:2,risk:2}},
+   {t:'收下，别声张',d:'没人看见……吧',c:'获得80万·倒查+12%',fx:{cash:80,risk:12,clean:-1}},
+ ]},
+ {id:'talent',title:'返乡青年想干事',body:'在广东打工的本地青年带着一份竹器电商计划回来，想租创业园厂房，缺一笔启动资金。',months:null,opts:[
+   {t:'厂房免租一年，帮他跑执照',d:'哪怕自己贴油钱',c:'繁荣+3 声誉+3 就业+2%',fx:{pros:3,rep:3,job:2},cost:10},
+   {t:'按市场规则来',d:'让他自己闯，错了不好担',c:'无变化',fx:{}},
+ ]},
+ {id:'media',title:'短视频里的云溪',body:'一条「云溪镇山洪冲垮便民桥」的视频上了同城热榜，评论区都在@镇政府。',months:null,opts:[
+   {t:'当天回应，三天抢修',d:'拍视频直播进度',c:'声誉+6 满意+3',fx:{rep:6,sat:3},cost:15},
+   {t:'删帖，等风头过',d:'县网信办比你想得快',c:'声誉-6 倒查+4%',fx:{rep:-6,risk:4},cost:3},
+ ]},
+ {id:'lonely',title:'敬老院的冬天',body:'镇敬老院暖气片坏了，老人们裹着棉被晒太阳。院长找你三次了。',months:[11,12,1,2],opts:[
+   {t:'特事特办，本周更换',d:'钱从备用金里出',c:'满意+5 声誉+3',fx:{sat:5,rep:3},cost:12},
+   {t:'列明年预算',d:'程序对，但今冬难熬',c:'满意-2',fx:{sat:-2}},
+ ]},
+ {id:'lure',title:'邻县来挖企业',body:'邻县开出免税三年，山珍厂老板来找你探口风。',months:null,opts:[
+   {t:'厂房续免半年，真诚留',d:'拼不了补贴就拼服务',c:'企业留下·繁荣+2',fx:{pros:2},cost:10},
+   {t:'尊重市场选择',d:'走了就走了',c:'企业迁出风险',fx:{loseBiz:1}},
+ ]},
+ {id:'inspect',title:'环保督查暗访',body:'省生态环保督查组到了县里，据说第一站就去了沿河各镇排污口。',months:null,opts:[
+   {t:'连夜自查，主动报告',d:'问题自己先亮出来',c:'若污水达标：声誉+4',fx:{selfCheck:1},cost:5},
+   {t:'赌他们不来云溪',d:'镇子小，消息灵通',c:'若污水超载：环境-8 倒查+8%',fx:{gamble:1}},
+ ]},
+];
+/* 固定节点事件 */
+const NODE_EVENTS={
+ 1:'两会月。人代会审议政府工作报告，你的施政思路要亮出来。',
+ 3:'环保绿化月。植树造林正当时，生态行动加分翻倍。',
+ 6:'主汛期。云溪河进入防汛关键段。',
+ 9:'开学季。学位缺口会集中显形。',
+ 12:'年度考核。县考核组进驻打分，全年成绩见分晓。',
+};
+/* 成就 */
+const ACHIEVES=[
+ {id:'first_build',name:'上马',desc:'开工建设第一个项目',cond:s=>s.stats2.builtCount>=1},
+ {id:'sewage_ok',name:'还清一河碧水',desc:'建成污水处理厂且污水不再超载',cond:s=>s.flags.sewageBuilt&&s.supply.sewage.capacity>=s.supply.sewage.demand},
+ {id:'rich',name:'家底厚了',desc:'财政结余突破 800 万',cond:s=>s.finance.cash>=800},
+ {id:'seat90',name:'一个都不能少',desc:'学位覆盖达到 90%',cond:s=>s.cover.seat>=90},
+ {id:'med90',name:'病有良医',desc:'医疗覆盖达到 90%',cond:s=>s.cover.med>=90},
+ {id:'env90',name:'绿水青山',desc:'环境分达到 90',cond:s=>s.env.score>=90},
+ {id:'gradeA',name:'年度一等',desc:'年度考核获评 A 等',cond:s=>s.grades.some(g=>g.grade==='A'||g.grade==='S')},
+ {id:'no_debt',name:'无债一身轻',desc:'任满四年后从未举债',cond:s=>s.year>=4&&s.finance.bonds.length===0&&s.stats2.monthsPlayed>=48},
+ {id:'biz5',name:'产业成林',desc:'在营企业达到 5 家',cond:s=>s.biz.list.length>=5},
+ {id:'promoted',name:'更进一步',desc:'晋升县处级副职',cond:s=>s.promoted},
+];
+/* ================= 状态层 ================= */
+let S=null; // 全局游戏状态
+function newState(name,places){
+  return {
+    ver:1, created:Date.now(),
+    player:name||randName(), places:places||DEFAULT_PLACES.slice(), // [镇,县,省]
+    year:1, month:1, age:31,
+    rank:1, // 0副职 1正职（乡科） 2县处副职
+    elected:false, appointed:false,
+    termStartYear:1, termYears:8,
+    wind:{...WINDS[0]}, windYearsLeft:2,
+    finance:{cash:180,transfer:120,localTax:52,salary:92,opex:26,livelihood:48,
+      bonds:[], bondPaidTotal:0, reserve:0, reserveOn:false},
+    stats:{pros:32,live:40,sat:50,job:8,price:18,
+      merit:0,rep:50,unity:58,boss:52,clean:100,risk:0},
+    env:{score:62,actions:0},
+    cover:{seat:45,med:40,road:52},
+    supply:{elec:{capacity:3.5,demand:2.0},water:{capacity:3.5,demand:2.2},
+      sewage:{capacity:0.5,demand:1.0}},
+    pop:{base:3.2}, gdp:5.2,
+    zone:'mix',
+    projects:[], // {id,progress,left,paid}
+    biz:{list:[],prospecting:[],cap:1,houseAvail:false,houses:[]},
+    hr:{quota:82,onDuty:74,hiring:false},
+    works:{done:[]}, workThisMonth:null, workPlan:null,
+    history:[], logs:[], orders:[], grades:[],
+    ledger:null, ended:false, ending:null, promoted:false,
+    achievements:[], flags:{sewageBuilt:false,auditPassed:0},
+    stats2:{builtCount:0,bizCount:0,evCount:0,monthsPlayed:0,maxCash:160},
+  };
+}
+/* ---------- 工具 ---------- */
+const $=id=>document.getElementById(id);
+const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtW=n=>Math.round(n)+'万';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+function toast(msg,ms){
+  const box=$('toast');const t=document.createElement('div');t.className='toast';t.textContent=msg;box.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),320)},ms||2200);
+}
+function log(msg){
+  if(!S)return;
+  S.logs.unshift({y:S.year,m:S.month,t:msg});
+  if(S.logs.length>200)S.logs.length=200;
+  renderLog();
+}
+function archOrder(kind,heading,title,number,body,role){
+  S.orders.unshift({key:kind+':'+S.year+':'+S.month,kind,year:S.year,month:S.month,heading,title,number,body,role,issuer:'中共'+committeeName()+'（组织部代章）'});
+}
+/* 地名显示：镇/县/省（公文中县委不带重复“县”字） */
+function townName(){return S?S.places[0]+'镇':''}
+function countyName(){return S?S.places[1]+'县':''}
+function committeeName(){return S?S.places[1]+'县委':''}
+function provName(){return S?S.places[2]+'省':''}
+/* ---------- 存档 ---------- */
+function saveGame(silent){
+  if(!S)return;
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));if(!silent)toast('已保存到本机');}
+  catch(e){toast('保存失败：'+e.message)}
+}
+function loadGame(){
+  const raw=localStorage.getItem(SAVE_KEY);
+  if(!raw)return false;
+  try{S=JSON.parse(raw);return true}
+  catch(e){return false}
+}
+function exportSave(){
+  if(!S)return;
+  const data=JSON.stringify(S,null,1);
+  const blob=new Blob([data],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='为官一任存档-第'+S.year+'年'+S.month+'月.json';
+  a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+  toast('存档已导出');
+}
+function importSave(file){
+  const fr=new FileReader();
+  fr.onload=()=>{
+    try{
+      const obj=JSON.parse(fr.result);
+      if(!obj||typeof obj.year!=='number'||!obj.player)throw new Error('格式不对');
+      S=obj;saveGame(true);bootGame();toast('存档已导入');
+    }catch(e){toast('导入失败：'+e.message)}
+  };
+  fr.readAsText(file,'utf-8');
+}
+/* 生涯榜 */
+function pushBoard(ending){
+  try{
+    const arr=JSON.parse(localStorage.getItem(BOARD_KEY)||'[]');
+    arr.unshift({id:'c'+Date.now(),name:S.player,place:S.places[0]+'镇',
+      score:Math.round(S.stats.merit*3+S.stats.rep*2+S.finance.cash/10+S.env.score+S.cover.seat/3+S.cover.med/3),
+      merit:Math.round(S.stats.merit),year:S.year,month:S.month,
+      grade:S.grades.length?S.grades[S.grades.length-1].grade:'—',
+      ending:ending||'进行中',built:S.stats2.builtCount,biz:S.stats2.bizCount,
+      detail:{pros:Math.round(S.stats.pros),cash:Math.round(S.finance.cash),env:Math.round(S.env.score)}});
+    if(arr.length>30)arr.length=30;
+    localStorage.setItem(BOARD_KEY,JSON.stringify(arr));
+  }catch(e){}
+}
+/* 检查成就 */
+function checkAch(){
+  ACHIEVES.forEach(a=>{
+    if(!S.achievements.includes(a.id)&&a.cond(S)){
+      S.achievements.push(a.id);
+      toast('达成成就「'+a.name+'」');
+    }
+  });
+}
+/* ================= 渲染框架 ================= */
+const TABS=[
+ {id:'over',name:'总览'},{id:'build',name:'建设'},{id:'biz',name:'招商'},
+ {id:'fin',name:'财政'},{id:'hr',name:'人事'},{id:'file',name:'档案'},
+ {id:'ach',name:'成就'},{id:'rank',name:'生涯'},
+];
+let curTab='over';
+/* 顶部状态条 */
+function renderStatus(){
+  const node=S?NODE_EVENTS[S.month]:'';
+  const sb=$('status-bar');
+  sb.innerHTML=
+   `<span>第<b>${S.year}</b>年 <b>${MONTHS[S.month-1]}</b>${node?' · <span class="blue">'+node+'</span>':''}</span>
+    <span>年龄 <b>${S.age}</b></span>
+    <span>职务 <b>${roleName()}</b></span>
+    <span class="wind">风向 <b>${S.wind.name}</b>（还有 ${S.windYearsLeft} 年）</span>
+    <span>政绩 <b>${Math.round(S.stats.merit)}</b>/100</span>
+    <span>声誉 <b>${S.stats.rep}</b></span>
+    <span>班子团结 <b>${S.stats.unity}</b></span>`;
+  $('h-term').textContent='本任第 '+(S.year-S.termStartYear+1)+' 年 / 任期 '+S.termYears+' 年 · 到龄退休 60 岁';
+  $('h-org').textContent=townName()+'人民政府';
+}
+function roleName(){
+  if(S.ended&&S.ending)return S.ending.title||'离任';
+  return S.rank===2?countyName()+'副县长':(S.elected?townName()+'镇长':'镇党委副书记、镇长候选人');
+}
+/* 6 指标卡 */
+function statCard(label,val,sub,cls){
+  return `<div class="stat-card ${cls||''}"><h4>${label}</h4><div class="v">${val}</div><div class="sub">${sub||''}</div></div>`;
+}
+function renderStats(){
+  const f=S.finance;
+  const debtRate=debtRatio();
+  const debtCls=debtRate>60?'bad':(debtRate>35?'':'good');
+  $('stat-cards').innerHTML=
+    statCard('财政结余',fmtW(f.cash),'储备金 '+fmtW(f.reserve),f.cash<50?'bad':'')+
+    statCard('人口 / GDP',S.pop.base.toFixed(1)+'万',S.gdp.toFixed(1)+'亿')+
+    statCard('繁荣度',Math.round(S.stats.pros),'就业 '+Math.round(S.stats.job)+'%')+
+    statCard('宜居度',Math.round(S.stats.live),'环境 '+Math.round(S.env.score))+
+    statCard('满意度',Math.round(S.stats.sat),'房价压力 '+S.stats.price)+
+    statCard('债务率',debtRate+'%',f.bonds.length?f.bonds.map(b=>b.left+'万').join('+'):'零负债',debtCls);
+}
+function monthlyIncomeEst(){
+  const f=S.finance;
+  const bizTax=S.biz.list.reduce((a,b)=>a+BIZ.find(x=>x.id===b.id).tax,0);
+  return f.transfer+f.localTax+bizTax+(S.supply&&0);
+}
+function monthlyOutgoEst(){
+  const f=S.finance;
+  const bondInterest=S.finance.bonds.reduce((a,b)=>a+b.left*0.005,0);
+  return f.salary+f.opex+f.livelihood+bondInterest;
+}
+function debtRatio(){
+  const total=S.finance.bonds.reduce((a,b)=>a+b.left,0);
+  const annual=monthlyIncomeEst()*12/100; // 万→亿近似口径，用收入倍数即可
+  if(total<=0)return 0;
+  return Math.min(999,Math.round(total/(monthlyIncomeEst()*12)*100));
+}
+/* 导航 */
+function renderNav(){
+  $('nav').innerHTML=TABS.map(t=>`<button data-t="${t.id}" class="${curTab===t.id?'on':''}" onclick="switchTab('${t.id}')">${t.name}</button>`).join('');
+}
+function switchTab(t){curTab=t;renderNav();renderMain();window.scrollTo({top:document.querySelector('.g-nav-wrap').offsetTop-8,behavior:'smooth'});}
+function toggleNav(){window.scrollTo({top:document.querySelector('.g-nav-wrap').offsetTop-8,behavior:'smooth'});toast('顶部即为功能目录');}
+function renderMain(){
+  const m=$('main');
+  if(!S||S.ended){m.innerHTML=renderEndPanel();return;}
+  switch(curTab){
+    case 'over':m.innerHTML=renderOverview();break;
+    case 'build':m.innerHTML=renderBuild();break;
+    case 'biz':m.innerHTML=renderBiz();break;
+    case 'fin':m.innerHTML=renderFin();break;
+    case 'hr':m.innerHTML=renderHr();break;
+    case 'file':m.innerHTML=renderFile();break;
+    case 'ach':m.innerHTML=renderAch();break;
+    case 'rank':m.innerHTML=renderRank();break;
+  }
+  refreshEst();
+}
+/* 侧栏：预估与日志与月报 */
+function refreshEst(){
+  if(!S)return;
+  const inc=monthlyIncomeEst(),out=monthlyOutgoEst();
+  const gap=inc-out;
+  const w=S.workThisMonth?WORKS.find(x=>x.id===S.workThisMonth).name:'未定';
+  $('next-est').innerHTML=`本月安排：${esc(w)}<br>预计下月：收入 ${inc}万 · 支出 ${out}万 · ${gap>=0?'<span class="green">结余 '+gap+'万</span>':'<span class="red">缺口 '+(-gap)+'万</span>'}`;
+  $('btn-next').disabled=!!S.ended;
+}
+function renderLog(){
+  const box=$('log-box');
+  if(!box)return;
+  box.innerHTML=S?S.logs.slice(0,40).map(l=>`<p>第${l.y}年${MONTHS[l.m-1]}　${esc(l.t)}</p>`).join(''):'';
+}
+function renderLedger(){
+  const el=$('month-ledger');
+  if(!S||!S.ledger){el.innerHTML='点「下月」推进时间，结算后在此显示本月账目。';return;}
+  const L=S.ledger;
+  el.innerHTML=`<div class="settle-list">
+    <div class="row"><span>税收与转移支付</span><b class="green">+${L.income}万</b></div>
+    <div class="row"><span>工资支出</span><b class="red">-${L.salary}万</b></div>
+    <div class="row"><span>运转支出</span><b class="red">-${L.opex}万</b></div>
+    <div class="row"><span>民生支出</span><b class="red">-${L.live}万</b></div>
+    ${L.interest?`<div class="row"><span>债券利息</span><b class="red">-${L.interest}万</b></div>`:''}
+    ${L.extra?`<div class="row"><span>${esc(L.extraName||'专项支出')}</span><b class="red">-${L.extra}万</b></div>`:''}
+    ${L.bonus?`<div class="row"><span>${esc(L.bonusName||'专项收入')}</span><b class="green">+${L.bonus}万</b></div>`:''}
+    <div class="row"><span>月末结余</span><b>${L.net>=0?'+':''}${L.net}万 → ${L.after}万</b></div>
+  </div>`;
+}
+/* ---------- 弹窗 ---------- */
+let dlgStack=[];
+function openDlg(html,opts){
+  opts=opts||{};
+  $('dlg').innerHTML=html+(opts.noClose?'':`<button class="close-x" onclick="closeDlg()">×</button>`);
+  $('dlg-mask').classList.add('on');
+}
+function closeDlg(){$('dlg-mask').classList.remove('on');}
+function confirmDlg(title,body,onOk,okText){
+  if(onOk)window._ok=onOk;
+  openDlg(`<h2 class="plain" style="font-size:1.2rem">${esc(title)}</h2>
+    <p class="body">${body}</p>
+    <div class="dlg-btns"><button class="btn btn-ghost" onclick="closeDlg()">再想想</button>
+    <button class="btn btn-main" onclick="closeDlg();window._ok&&window._ok()">${okText||'确认'}</button></div>`);
+}
+/* 印章 */
+function seal(top,bottom){
+  return `<div class="seal"><span class="s1">${top}</span><span class="star">★</span><span class="s2">${bottom}</span></div>`;
+}
+/* ================= 页面：总览 ================= */
+function heroSVG(){
+ return `<div class="hero-art"><svg viewBox="0 0 900 220" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="220" fill="#EDE6D3"/>
+  <path d="M0 130 Q80 52 170 106 Q230 78 300 116 Q380 44 470 102 Q560 66 640 112 Q740 78 900 128 L900 220 L0 220 Z" fill="#CFC6A8"/>
+  <path d="M0 152 Q140 106 260 138 Q400 92 520 132 Q660 182 780 134 Q830 122 900 146 L900 220 L0 220 Z" fill="#B2A98A"/>
+  <path d="M0 220 L0 176 Q150 152 300 172 Q520 190 700 168 Q810 158 900 176 L900 220 Z" fill="#93A386"/>
+  <path d="M60 182 Q450 140 860 164" stroke="#5E7B8C" stroke-width="8" fill="none" opacity=".6" stroke-linecap="round"/>
+  <g><rect x="404" y="132" width="30" height="18" fill="#8A7A5C"/><path d="M404 132 L419 118 L434 132 Z" fill="#6E5F42"/>
+  <rect x="446" y="136" width="24" height="14" fill="#96856B"/><path d="M446 136 L458 126 L470 136 Z" fill="#7A6A4C"/>
+  <rect x="376" y="138" width="20" height="12" fill="#8A7A5C"/><path d="M376 138 L386 129 L396 138 Z" fill="#6E5F42"/>
+  <rect x="512" y="128" width="36" height="22" fill="#8F7F60"/><path d="M512 128 L530 112 L548 128 Z" fill="#72624A"/></g>
+  <rect x="420" y="150" width="64" height="6" rx="3" fill="#8A6F4D"/>
+  <rect x="423" y="156" width="4" height="18" fill="#8A6F4D"/><rect x="477" y="156" width="4" height="18" fill="#8A6F4D"/>
+  <circle cx="770" cy="46" r="20" fill="#E8D9A8" opacity=".9"/>
+ </svg></div><div class="hero-cap">云溪镇：三万一千人，一河两岸，九分山水一分田。</div>`;
+}
+function barHTML(v,max,cls){
+  const p=clamp(v/(max||100)*100,0,100);
+  return `<div class="bar"><i class="${cls||''}" style="width:${p}%"></i></div>`;
+}
+function renderOverview(){
+  const warn=[];
+  if(S.cover.seat<70)warn.push('学位缺口大，开学季矛盾集中');
+  if(S.cover.med<70)warn.push('医疗资源不足，群众意见大');
+  if(S.supply.sewage.capacity<S.supply.sewage.demand)warn.push('污水处理超载，尾水直排影响环境');
+  if(S.finance.cash<60)warn.push('财政结余偏低，工资保障压力大');
+  if(S.stats.unity<40)warn.push('班子不团结，工作推不动');
+  if(S.env.score<45)warn.push('环境分低于 45，县级督查随时可能上门');
+  const workPicked=S.workThisMonth;
+  const worksHTML=WORKS.map(w=>{
+    const on=workPicked===w.id;
+    return `<div class="pick ${on?'on':''}" onclick="pickWork('${w.id}')">
+      <h5>${w.name}</h5><div class="meta">${w.desc}</div>
+      <div class="eff">${w.eff}${w.cost?' · 花费约 '+w.cost+'万':''}</div></div>`;
+  }).join('');
+  const node=NODE_EVENTS[S.month];
+  const jobs=S.biz.list.length;
+  const bizTax=S.biz.list.reduce((a,b)=>a+BIZ.find(x=>x.id===b.id).tax,0);
+  return `
+  ${heroSVG()}
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>本月安排 · ${MONTHS[S.month-1]}${node?'（'+node+'）':''}</h3><div class="hint">每月只能主抓一件事</div></div>
+    ${node?`<p class="rule">${NODE_EVENTS[S.month]}</p>`:''}
+    <div class="card-select">${worksHTML}</div>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>县里的风向</h3></div>
+    <p class="rule">${S.wind.name} · ${S.wind.desc}</p>
+    ${windBars()}
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>${townName()}基础情况</h3></div>
+    <table class="kv">
+      <tr><td>镇情</td><td>山区库区镇，年轻人外流，财政靠转移支付过日子。</td></tr>
+      <tr><td>学位覆盖</td><td>${barHTML(S.cover.seat,100)} <b>${Math.round(S.cover.seat)}%</b></td></tr>
+      <tr><td>医疗覆盖</td><td>${barHTML(S.cover.med,100)} <b>${Math.round(S.cover.med)}%</b></td></tr>
+      <tr><td>道路通达</td><td>${barHTML(S.cover.road,100)} <b>${Math.round(S.cover.road)}%</b></td></tr>
+      <tr><td>编制</td><td>核定 ${S.hr.quota} · 在编 ${S.hr.onDuty} ${S.hr.onDuty<S.hr.quota-4?'<span class="red">缺员影响项目效率</span>':''}</td></tr>
+      <tr><td>在营企业</td><td>${jobs} 家 · 月税收贡献 ${bizTax}万 · 本任期建成项目 ${S.stats2.builtCount} 个</td></tr>
+    </table>
+  </div>
+  ${warn.length?`<div class="panel"><div class="panel-h"><div class="bar-mark"></div><h3>需要注意</h3></div>
+    ${warn.map(w=>`<div class="rowline"><span class="red">▲</span><span>${w}</span></div>`).join('')}</div>`:''}
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>晋升条件</h3><div class="hint">达成即有机会更进一步</div></div>
+    <table class="kv">
+      <tr><td>政绩</td><td>${Math.round(S.stats.merit)} / 100 ${S.stats.merit>=100?'<span class="green">已达标</span>':''}</td></tr>
+      <tr><td>年度考核</td><td>任期内至少一次 A 等或连续两次 B 等以上 ${gradeHint()}</td></tr>
+      <tr><td>债务</td><td>债务率不高于 60%（当前 ${debtRatio()}%）</td></tr>
+      <tr><td>环境</td><td>环境分不低于 45（当前 ${Math.round(S.env.score)}）</td></tr>
+      <tr><td>团结</td><td>班子团结不低于 40（当前 ${S.stats.unity}）</td></tr>
+      <tr><td>廉政</td><td>倒查概率不高于 15%（当前 ${S.stats.risk}%）</td></tr>
+    </table>
+    <p class="rule">任满 ${S.termYears} 年未晋升，转任县直部门二线岗位，游戏结算。</p>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>水电与污水供需</h3></div>
+    <p class="rule">居民与企业共用容量；供应不足压制产业税收与就业；污水超载每月扣环境分。</p>
+    ${supplyRow('电厂','elec')}${supplyRow('水厂','water')}${supplyRow('污水厂','sewage')}
+  </div>`;
+}
+function gradeHint(){
+  const g=S.grades.filter(x=>x.year>=S.termStartYear);
+  if(!g.length)return '<span class="muted">尚无考核记录</span>';
+  const last=g[g.length-1];
+  return `<span class="muted">上年：${last.grade} 等</span>`;
+}
+function windBars(){
+  const w=S.wind.weights;
+  let h='';
+  if(w.env)h+=rowBar('环境',w.env);
+  h+=rowBar('繁荣',w.pros)+rowBar('宜居',w.live)+rowBar('满意',w.sat);
+  if(w.debtK)h+=`<div class="rowline"><span class="t">债务扣分</span><span class="m">系数 ${w.debtK}</span>${barHTML(20*(w.debtK/2),100,'r')}</div>`;
+  return h;
+}
+function rowBar(name,v){
+  return `<div class="rowline"><span class="t">${name}</span><span class="m">考核权重 ${v}%</span>${barHTML(v,66)}</div>`;
+}
+function supplyRow(name,key){
+  const u=S.supply[key];
+  const over=u.demand>u.capacity;
+  return `<div class="rowline"><span class="t">${name}</span><span class="m">容量 ${u.capacity.toFixed(1)} · 需求 ${u.demand.toFixed(1)} · 已服务 ${Math.min(u.capacity,u.demand).toFixed(1)}</span>
+    <span class="${over?'red':'green'}">${over?'超载 '+(u.demand-u.capacity).toFixed(1):'充足'}</span></div>`;
+}
+function pickWork(id){
+  if(S.ended)return;
+  S.workThisMonth=id;
+  renderMain();
+}
+
+/* ================= 页面：建设 ================= */
+function renderBuild(){
+  const inBuild=S.projects.filter(p=>!p.done);
+  const built=S.projects.filter(p=>p.done);
+  const avail=PROJECTS.filter(p=>!S.projects.some(x=>x.id===p.id));
+  return `
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>在建项目</h3><div class="hint">${inBuild.length} 个在建</div></div>
+    ${inBuild.length?inBuild.map(p=>{
+      const d=PROJECTS.find(x=>x.id===p.id);
+      return `<div class="rowline"><span class="t">${d.name}</span>
+        <span class="m">造价 ${d.cost}万 · 剩余工期 ${Math.ceil(p.left)} 个月 · 已拨 ${p.paid}万</span>
+        <span style="min-width:180px">${barHTML(p.progress,100)} <b>${Math.round(p.progress)}%</b></span></div>`;
+    }).join(''):'<p class="muted">暂无在建项目。别让一年的预算躺在账上睡觉。</p>'}
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>可开工项目</h3><div class="hint">点卡片开工 · 每月结算自动拨款推进</div></div>
+    <div class="card-select">
+    ${avail.map(p=>{
+      const afford=S.finance.cash>=Math.round(p.cost/3);
+      const dis=!afford;
+      return `<div class="pick ${dis?'dis':''}" onclick="startProject('${p.id}')">
+        <h5>${p.name}<span class="tag">${p.cat}</span></h5>
+        <div class="meta">造价 ${p.cost}万 · 工期 ${p.dur} 个月</div>
+        <div class="eff">${p.eff}</div>
+        <div class="meta">${p.note}</div>
+        ${dis?'<div class="why">首期拨付不足（需首付 '+Math.round(p.cost/3)+'万）</div>':''}
+      </div>`;
+    }).join('')}
+    </div>
+  </div>
+  ${built.length?`<div class="panel"><div class="panel-h"><div class="bar-mark"></div><h3>已建成项目</h3></div>
+    ${built.map(p=>{const d=PROJECTS.find(x=>x.id===p.id);return `<div class="rowline"><span class="t">${d.name}</span><span class="green">已竣工</span></div>`}).join('')}</div>`:''}
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>产业片区准入</h3></div>
+    <p class="rule">高污染企业只能落在重污染专门片区并经县里会审；生态红线区禁止一切工业。</p>
+    <div class="card-select">
+    ${['low','mix','lim','eco'].map(z=>{
+      const on=S.zone===z;
+      const d=ZONES[z];
+      return `<div class="pick ${on?'on':''}" onclick="setZone('${z}')">
+        <h5>${d.name}</h5><div class="meta">${z==='eco'?'禁止工业':z==='low'?'仅低污染':z==='mix'?'低/中污染均可':(d.banHeavy?'限中低污染':'限制新增')}</div></div>`;
+    }).join('')}
+    </div>
+  </div>`;
+}
+function startProject(id){
+  if(S.ended)return;
+  const d=PROJECTS.find(p=>p.id===id);
+  if(S.projects.some(p=>p.id===id))return;
+  const down=Math.round(d.cost/4);
+  if(S.finance.cash<down+30){toast('现金余量不足（首付 '+down+'万，另需留足当月开支）');return;}
+  S.projects.push({id,progress:0,left:d.dur,paid:down,done:false});
+  S.finance.cash-=down;
+  S.stats2.builtCount++;
+  toast(d.name+' 开工，首期拨付 '+down+'万');
+  log(d.name+' 开工建设。');
+  checkAch();renderAll();
+}
+function setZone(z){if(S.ended)return;S.zone=z;renderMain();toast('片区准入调整为：'+ZONES[z].name);}
+
+/* ================= 页面：招商 ================= */
+function renderBiz(){
+  const inBiz=S.biz.list;
+  const housingUnlocked=S.biz.houseAvail;
+  const bizCards=BIZ.map(b=>{
+    const landed=inBiz.some(x=>x.id===b.id);
+    const needOk=b.need.every(n=>S.projects.some(p=>p.id===n&&p.done));
+  const heavyOk=b.poll<2||(S.projects.some(p=>p.id==='sewage'&&p.done)&&S.zone!=='eco'&&S.zone!=='low');
+  const envOk=!b.condEnv||S.env.score>=b.condEnv;
+  const can=!landed&&needOk&&envOk&&heavyOk&&inBiz.length<bizCap();
+    const whys=[];
+    if(landed)whys.push('已落地');
+    if(!needOk)whys.push('前置未齐：'+b.need.map(n=>PROJECTS.find(p=>p.id===n).name).join('、'));
+    if(!envOk)whys.push('环境 '+Math.round(S.env.score)+'，需 '+b.condEnv);
+    if(!heavyOk)whys.push('高污染项目需污水厂建成并通过县里会审');
+    if(!landed&&needOk&&envOk&&heavyOk&&inBiz.length>=bizCap())whys.push('产业容量已满：建路、水、污水、入户等基础设施或创业园可扩容');
+    return `<div class="pick ${landed?'on':can?'':'dis'}" onclick="${can?'landBiz(\''+b.id+'\')':''}">
+      <h5>${b.name}<span class="tag ${b.poll===2?'hot':b.poll===1?'':'ok'}">${b.cat}</span></h5>
+      <div class="meta">投资 ${b.inv}万 · 月税 ${b.tax}万 · 岗位 ${b.job}</div>
+      <div class="eff">${b.note}</div>
+      ${whys.length?`<div class="why">${whys.join('；')}</div>`:''}
+    </div>`;
+  }).join('');
+  return `
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>在营企业</h3><div class="hint">${inBiz.length} / 容量 ${bizCap()}</div></div>
+    ${inBiz.length?inBiz.map(x=>{const d=BIZ.find(b=>b.id===x.id);
+      return `<div class="rowline"><span class="t">${d.name}</span><span class="m">月税 ${d.tax}万 · 岗位 ${d.job} · ${d.poll===2?'重污染':d.poll===1?'有排放':'清洁'}</span><span class="green">在营</span></div>`}).join('')
+    :'<p class="muted">镇上一家像样的企业都没有。招到一个，月月有税。</p>'}
+    <p class="rule">企业用地规模按片区准入控制；重污染企业对环境分持续施压。</p>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>招商目标</h3><div class="hint">${S.workThisMonth==='attract'?'本月外出招商，落地更顺':'选「外出招商」可提高成功率'}</div></div>
+    <div class="card-select">${bizCards}</div>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>住宅开发</h3></div>
+    ${housingUnlocked?HOUSE.map(h=>`
+      <div class="rowline"><span class="t">${h.name}</span><span class="m">投入 ${h.cost}万 · 工期 ${h.dur}月 · 预计回款 ${h.sale}万</span>
+      ${S.projects.some(p=>p.id===h.id)?'<span class="green">在建/已建</span>':`<button class="btn btn-ghost btn-sm" onclick="startHouse('${h.id}')">开发</button>`}</div>`).join('')
+    :'<p class="muted">需先建成「镇区供排水管网」与「云溪污水处理厂」才能报批住宅用地。</p>'}
+    <p class="rule">住宅销售会抬升房价压力，挤压满意度；钱要挣，火候也要看。</p>
+  </div>`;
+}
+function bizCap(){
+  let cap=2;
+  if(S.projects.some(p=>p.id==='park'&&p.done))cap+=1;
+  ['road','water','sewage','tapwater'].forEach(k=>{if(S.projects.some(p=>p.id===k&&p.done))cap+=1;});
+  return cap;
+}
+function landBiz(id){
+  if(S.ended)return;
+  const d=BIZ.find(b=>b.id===id);
+  if(S.biz.list.some(x=>x.id===id))return;
+  if(S.biz.list.length>=bizCap()){toast('产业容量已满');return;}
+  let chance=S.workThisMonth==='attract'?0.95:0.65;
+  if(d.poll===1)chance-=0.05;
+  if(Math.random()>chance){toast('客商还在犹豫，本月外出招商更容易谈成');return;}
+  S.biz.list.push({id,month:S.year*12+S.month});
+  S.stats2.bizCount++;
+  if(d.poll===2){S.finance.cash-=100;S.env.score-=6;toast('电镀园落地，县里会审通过，环境付出代价');}
+  else toast(d.name+' 正式落地云溪镇');
+  log(d.name+' 签约落地，月增税收 '+d.tax+'万。');
+  S.stats.job=clamp(S.stats.job+d.job/60,0,100);
+  S.stats.pros=clamp(S.stats.pros+2,0,100);
+  checkAch();renderAll();
+}
+function startHouse(id){
+  const d=HOUSE.find(h=>h.id===id);
+  const down=Math.round(d.cost/4);
+  if(S.finance.cash<down+30){toast('现金余量不足');return;}
+  S.projects.push({id,progress:0,left:d.dur,paid:down,done:false});
+  S.finance.cash-=down;
+  toast(d.name+' 开工');renderAll();
+}
+/* ================= 页面：财政 ================= */
+function renderFin(){
+  const f=S.finance;
+  const bonds=f.bonds.map(b=>`<div class="rowline"><span class="t">${b.name}</span><span class="m">年利率 ${b.rate}% · 剩余 ${b.left}万</span>
+    <button class="btn btn-ghost btn-sm" onclick="repayBond('${b.id}')">提前偿还</button></div>`).join('');
+  return `
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>本月收支预估</h3></div>
+    <table class="kv">
+      <tr><td>转移支付</td><td>+${f.transfer}万（县财政按月拨付）</td></tr>
+      <tr><td>本地税源</td><td>+${f.localTax}万 ${S.biz.list.length?'（含镇属企业分成）':''}</td></tr>
+      <tr><td>企业税收</td><td>+${S.biz.list.reduce((a,b)=>a+BIZ.find(x=>x.id===b.id).tax,0)}万（${S.biz.list.length} 家在营企业）</td></tr>
+      <tr><td>工资支出</td><td>-${f.salary}万</td></tr>
+      <tr><td>运转支出</td><td>-${f.opex}万</td></tr>
+      <tr><td>民生支出</td><td>-${f.livelihood}万</td></tr>
+      <tr><td>债券利息</td><td>-${S.finance.bonds.reduce((a,b)=>a+b.left*0.005,0).toFixed(1)}万</td></tr>
+      <tr><td><b>预计月缺口</b></td><td><b>${monthlyIncomeEst()-monthlyOutgoEst()>=0?'结余 ':'缺口 '}${Math.abs(monthlyIncomeEst()-monthlyOutgoEst())}万</b></td></tr>
+    </table>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>专项债与借款</h3><div class="hint">债务率上限 60%</div></div>
+    <p class="rule">乡镇不得违规举债是红线。游戏内「专项债」需县财政会审通过，每次 100–500 万，月息 0.5%；债务率超 60% 触发县里约谈，倒查概率上升。</p>
+    ${bonds||'<p class="muted">目前零负债。这是底气，也是约束。</p>'}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      ${[100,200,300,500].map(n=>`<button class="btn btn-ghost btn-sm" onclick="issueBond(${n})" ${debtRatioAfter(n)>60?'disabled':''}>申请 ${n}万</button>`).join('')}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>财政储备金</h3></div>
+    <p class="rule">按月将结余的一成存入储备金，可增强抗风险能力；突发事件优先动用储备金，不足才吃现金。</p>
+    <div class="rowline"><span class="t">储备金</span><span class="m">当前 ${f.reserve}万</span>
+      <button class="btn ${f.reserveOn?'btn-main':'btn-ghost'} btn-sm" onclick="toggleReserve()">${f.reserveOn?'每月存入中（点此停）':'开启按月存入'}</button></div>
+  </div>`;
+}
+function debtRatioAfter(n){
+  const total=S.finance.bonds.reduce((a,b)=>a+b.left,0)+n;
+  return Math.round(total/(monthlyIncomeEst()*12)*100);
+}
+function issueBond(n){
+  if(S.ended)return;
+  if(debtRatioAfter(n)>60){toast('超过 60% 红线，县里不会批');return;}
+  const id='b'+Date.now();
+  S.finance.bonds.push({id,name:'专项债 '+n+'万',left:n,rate:6,total:n});
+  S.finance.cash+=n;
+  S.stats.risk+=1;
+  toast('县财政会审通过，'+n+'万到账（含手续提醒，倒查概率 +1%）');
+  log('申请专项债 '+n+'万。');
+  renderAll();
+}
+function repayBond(id){
+  const b=S.finance.bonds.find(x=>x.id===id);
+  if(!b)return;
+  if(S.finance.cash<b.left){toast('现金不足');return;}
+  window._ok=()=>{
+    S.finance.cash-=b.left;S.finance.bonds=S.finance.bonds.filter(x=>x.id!==id);
+    S.stats.merit+=3;toast('一笔还清，政绩 +3');renderAll();
+  };
+  confirmDlg('提前偿还','动用现金 '+b.left+'万，一次性了结这笔债？还款是硬政绩。',null,'还清');
+  renderMain();
+}
+function toggleReserve(){S.finance.reserveOn=!S.finance.reserveOn;renderMain();}
+
+/* ================= 页面：人事 ================= */
+function renderHr(){
+  const c=CADRES.map(x=>`<div class="rowline"><span class="t">${x.name}</span>
+    <span class="m">${x.role} · ${x.age}岁 · 分管${x.spec}</span><span class="muted">${x.desc}</span></div>`).join('');
+  return `
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>班子成员</h3><div class="hint">团结 ${S.stats.unity}</div></div>
+    <table class="kv">${CADRES.map(x=>`<tr><td>${x.name}</td><td>${x.role}（${x.age}岁）· 分管${x.spec}<br><span class="muted">${x.desc}</span></td></tr>`).join('')}</table>
+    <p class="rule">你是二把手干一把手的活：书记快退休求稳，你求变。团结低于 40，项目与考核都要打折。</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="teamBuilding()">组织一次班子务虚会（8万）</button>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>干部编制</h3></div>
+    <div class="rowline"><span class="t">核定编制</span><span>${S.hr.quota} 名</span></div>
+    <div class="rowline"><span class="t">实有在编</span><span>${S.hr.onDuty} 名 ${S.hr.onDuty<S.hr.quota?'<span class="red">缺员 '+ (S.hr.quota-S.hr.onDuty)+' 名</span>':''}</span></div>
+    <p class="rule">缺员时项目推进效率下降；招录需县里统一组织，一年一批。</p>
+    <button class="btn btn-ghost btn-sm" onclick="hireStaff()">${S.hr.hiring?'已报县里待批复':'报请招录补充缺员'}</button>
+  </div>`;
+}
+function teamBuilding(){
+  if(S.finance.cash<8){toast('经费不足');return;}
+  S.finance.cash-=8;S.stats.unity=clamp(S.stats.unity+7,0,100);
+  toast('务虚会开到晚上十点，团结 +7');log('组织班子务虚会。');renderAll();
+}
+function hireStaff(){
+  if(S.hr.hiring){toast('已报县里，年底批复');return;}
+  S.hr.hiring=true;toast('招录报告已报县人社局，年底批复到岗');
+  renderMain();
+}
+
+/* ================= 页面：档案 ================= */
+function renderFile(){
+  const orders=S.orders.map(o=>`
+    <div class="tl-item"><div class="tl-t">第${o.year}年${MONTHS[o.month-1]} · ${o.heading}</div>
+    <div class="tl-c"><b>${o.title}</b><br>${o.number}<br>${esc(o.body)}</div></div>`).join('');
+  return `
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>干部任免档案</h3></div>
+    ${orders||'<p class="muted">档案还是空的。</p>'}
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>历年考核</h3></div>
+    ${S.grades.length?S.grades.map(g=>`<div class="rowline"><span class="t">第${g.year}年</span><span class="m">${g.txt}</span><span class="${g.grade==='A'?'green':g.grade==='D'||g.grade==='C'?'red':''}">${g.grade} 等</span></div>`).join(''):'<p class="muted">还没有经历过年度考核。</p>'}
+  </div>
+  <div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>任职文书</h3></div>
+    <table class="kv">
+      <tr><td>现任职务</td><td>${roleName()}</td></tr>
+      <tr><td>任职时间</td><td>第${S.termStartYear}年起</td></tr>
+      <tr><td>简历</td><td>31 岁由县直部门下派任职，基层履历 ${S.year-1} 年。</td></tr>
+    </table>
+  </div>`;
+}
+/* ================= 页面：成就 ================= */
+function renderAch(){
+  return `<div class="panel"><div class="panel-h"><div class="bar-mark"></div><h3>成就</h3><div class="hint">${S.achievements.length} / ${ACHIEVES.length}</div></div>
+  <div class="ach-grid">${ACHIEVES.map(a=>{
+    const got=S.achievements.includes(a.id);
+    return `<div class="ach ${got?'':'locked'}"><h5>${got?'★':'☆'} ${a.name}</h5><p>${a.desc}</p></div>`;
+  }).join('')}</div></div>`;
+}
+/* ================= 页面：生涯榜 ================= */
+function renderRank(){
+  let arr=[];
+  try{arr=JSON.parse(localStorage.getItem(BOARD_KEY)||'[]')}catch(e){}
+  return `<div class="panel">
+    <div class="panel-h"><div class="bar-mark"></div><h3>生涯榜</h3><div class="hint">本机所有局长档案</div></div>
+    <p class="rule">只记录已结算的任期。分数 = 政绩×3 + 声誉×2 + 结余/10 + 环境 + 民生覆盖/3。</p>
+    ${arr.length?arr.map((r,i)=>`<div class="rank-row"><span>${i+1}. <b>${esc(r.name)}</b> · ${esc(r.place)} · 第${r.year}年${r.month}月</span><span>末等 ${r.grade} · ${r.ending} · <b>${r.score}</b>分</span></div>`).join('')
+    :'<p class="muted">还没有完结的任期。去写完第一段仕途。</p>'}
+  </div>`;
+}
+/* ================= 结局面板 ================= */
+function renderEndPanel(){
+  const e=S.ending;
+  return `<div class="panel"><div class="panel-h"><div class="bar-mark"></div><h3>${e?e.title:'任期结束'}</h3></div>
+    <p class="body" style="text-indent:2em">${e?e.body:''}</p>
+    <div class="end-score">
+      <div class="cell"><h5>政绩</h5><div class="n">${Math.round(S.stats.merit)}</div></div>
+      <div class="cell"><h5>声誉</h5><div class="n">${Math.round(S.stats.rep)}</div></div>
+      <div class="cell"><h5>结余</h5><div class="n">${Math.round(S.finance.cash)}万</div></div>
+      <div class="cell"><h5>环境</h5><div class="n">${Math.round(S.env.score)}</div></div>
+    </div>
+    <div class="dlg-btns"><button class="btn btn-ghost" onclick="exportSave()">导出本任存档</button>
+    <button class="btn btn-main" onclick="restartNow()">再开一局</button></div>
+  </div>`;
+}
+/* ================= 模拟引擎 ================= */
+function renderAll(){
+  renderStatus();renderStats();renderMain();renderLog();renderLedger();
+}
+/* ---------- 月度结算 ---------- */
+function nextMonth(){
+  if(!S||S.ended)return;
+  if(S.month===1){showTwoSessions();return;} // 两会月先定调子
+  if(!S.workThisMonth){toast('先在「总览」定下本月工作安排');return;}
+  doSettle();
+}
+function showTwoSessions(){
+  openDlg(`<div class="eyebrow">第${S.year}年一月 · 两会</div><h2>人代会审议</h2><hr class="file-line">
+    <p class="body">你走上报告席，全场安静下来。今年的政府工作报告，把哪一页讲得最响？</p>
+    <div class="ev-opts">
+      <div class="ev-opt" onclick="applyPlan('live')"><div class="oh">把民生保障讲在最前</div><div class="od">学校、医院、饮水，件件承诺清单化</div><div class="oc">满意度 +5 · 宜居 +2 · 政绩倾向民生</div></div>
+      <div class="ev-opt" onclick="applyPlan('pros')"><div class="oh">把产业发展讲在最前</div><div class="od">园区、招商、财税，目标三年翻番</div><div class="oc">繁荣 +4 · 招商环境更好 · 政绩倾向经济</div></div>
+      <div class="ev-opt" onclick="applyPlan('eco')"><div class="oh">把生态底线讲在最前</div><div class="od">青山绿水就是云溪的饭碗</div><div class="oc">环境 +4 · 声誉 +3 · 政绩倾向生态</div></div>
+    </div>`,{noClose:true});
+}
+function applyPlan(kind){
+  S.workPlan=kind;
+  if(kind==='live'){S.stats.sat+=5;S.stats.live+=2;}
+  if(kind==='pros'){S.stats.pros+=4;}
+  if(kind==='eco'){S.env.score+=4;S.stats.rep+=3;}
+  log('两会上作政府工作报告，今年主抓'+(kind==='live'?'民生':kind==='pros'?'产业':'生态')+'。');
+  closeDlg();
+  doSettle();
+}
+function doSettle(){
+  const f=S.finance;
+  /* 收入 */
+  const bizTax=S.biz.list.reduce((a,b)=>a+BIZ.find(x=>x.id===b.id).tax,0);
+  const pvIncome=S.projects.some(p=>p.id==='pv'&&p.done)?9:0;
+  const income=Math.round(f.transfer+f.localTax+bizTax+pvIncome);
+  /* 支出 */
+  const interest=Math.round(f.bonds.reduce((a,b)=>a+b.left*0.005,0)*10)/10;
+  const outgo=f.salary+f.opex+f.livelihood+interest;
+  /* 工作安排费用与效果 */
+  let workCost=0;
+  if(S.workThisMonth){
+    const w=WORKS.find(x=>x.id===S.workThisMonth);
+    workCost=w.cost;
+    if(w.id==='report'){S.stats.boss=clamp(S.stats.boss+6,0,100);}
+    if(w.id==='team'){S.stats.unity=clamp(S.stats.unity+8,0,100);}
+    if(w.id==='grass'){S.stats.sat+=3;S.stats.rep+=2;}
+    if(w.id==='study'){S.stats.rep+=4;S.stats.boss+=2;}
+  }
+  /* 项目推进：现金余量低于 30 万时暂停拨付、进度减半 */
+  let extraSpend=0, slowedNoted=false;
+  S.projects.forEach(p=>{
+    if(p.done)return;
+    const d=PROJECTS.find(x=>x.id===p.id)||HOUSE.find(x=>x.id===p.id);
+    if(!d)return;
+    const payLeft=d.cost-p.paid;
+    const payThis=Math.min(Math.ceil(payLeft/p.left),payLeft);
+    const eff=(S.hr.onDuty<S.hr.quota-4)?0.7:1;
+    const fundOk=(f.cash-workCost)>=payThis+30;
+    if(fundOk&&payThis>0){f.cash-=payThis;p.paid+=payThis;}
+    else if(payThis>0){if(!slowedNoted){log('资金紧张，在建项目放缓。');slowedNoted=true;}}
+    const step=fundOk?100/d.dur*eff:50/d.dur;
+    p.progress=clamp(p.progress+step,0,100);
+    p.left-=fundOk?(eff>=1?1:0.7):(eff>=1?0.5:0.35);
+    if(p.progress>=100||p.left<=0){
+      p.done=true;p.progress=100;
+      finishProject(p.id);
+    }
+  });
+  /* 结余 */
+  const net=income-outgo-workCost;
+  f.cash+=net;
+  if(f.reserveOn&&net>0){const put=Math.round(net*0.1);f.cash-=put;f.reserve+=put;}
+  if(f.cash<0){
+    if(f.reserve>=-f.cash){const take=-f.cash;f.reserve-=take;f.cash=0;}
+    else{f.cash=f.cash+f.reserve;f.reserve=0;S.flags.unpaid=(S.flags.unpaid||0)+1;}
+  }else{S.flags.unpaid=0;}
+  S.stats2.maxCash=Math.max(S.stats2.maxCash,f.cash);
+  S.ledger={income,salary:f.salary,opex:f.opex,live:f.livelihood,interest:Math.round(interest),
+    net:Math.round(net-workCost),after:Math.round(f.cash),bonus:pvIncome,bonusName:'光伏发电收入'};
+  /* 环境演化：山区自然恢复能力较强；污水超载持续施压 */
+  let envDelta=0.5;
+  if(S.zone==='low'||S.zone==='eco')envDelta+=0.2;
+  S.biz.list.forEach(b=>{const d=BIZ.find(x=>x.id===b.id);envDelta-=d.poll===2?1.2:d.poll===1?0.4:0;});
+  if(S.supply.sewage.capacity<S.supply.sewage.demand)envDelta-=1.2;
+  if(S.month===3&&S.workThisMonth==='grass')envDelta+=2;
+  S.env.score=clamp(S.env.score+envDelta,0,100);
+  /* 供需演化：企业落地抬升需求 */
+  const bizDemand=S.biz.list.length*0.3;
+  S.supply.elec.demand=+(2.0+bizDemand*0.7).toFixed(1);
+  S.supply.water.demand=+(2.2+bizDemand*0.6).toFixed(1);
+  S.supply.sewage.demand=+(1.0+bizDemand*0.8).toFixed(1);
+  /* 六维演化 */
+  S.stats.sat=clamp(S.stats.sat+(S.cover.seat<70?(S.month===9?-1.5:-0.4):0.1)
+    +(S.cover.med<70?-0.4:0)+(S.stats.price>40?-0.5:0)+(S.stats.job>25?0.15:0),0,100);
+  S.stats.pros=clamp(S.stats.pros+(S.biz.list.length?0.15:0)-(S.supply.elec.capacity<S.supply.elec.demand?0.3:0),0,100);
+  S.stats.price=clamp(S.stats.price-0.3,0,100);
+  S.stats.rep=clamp(S.stats.rep+(S.stats.rep>50?-0.15:0.15),0,100);
+  S.stats.boss=clamp(S.stats.boss-0.5,0,100);
+  S.stats.job=clamp(S.stats.job+(S.biz.list.length?0.1:0),0,100);
+  /* 债务风险自然演化 */
+  if(debtRatio()>60)S.stats.risk=clamp(S.stats.risk+1,0,100);
+  /* 时间推进 */
+  S.stats2.monthsPlayed++;
+  S.month++;
+  if(S.month>12){S.month=1;S.year++;S.age++;annualGrade();}
+  S.workThisMonth=null;
+  /* 随机事件 */
+  maybeEvent();
+  /* 结局检查 */
+  if(checkEnding())return;
+  checkAch();
+  renderAll();
+  saveGame(true);
+}
+/* 项目建成 */
+function finishProject(id){
+  const d=PROJECTS.find(p=>p.id===id);
+  if(d){
+    const a=d.add||{};
+    if(a.seat)S.cover.seat=clamp(S.cover.seat+a.seat,0,100);
+    if(a.med)S.cover.med=clamp(S.cover.med+a.med,0,100);
+    if(a.road)S.cover.road=clamp(S.cover.road+a.road,0,100);
+    if(a.live)S.stats.live=clamp(S.stats.live+a.live,0,100);
+    if(a.sat)S.stats.sat=clamp(S.stats.sat+a.sat,0,100);
+    if(a.pros)S.stats.pros=clamp(S.stats.pros+a.pros,0,100);
+    if(a.job)S.stats.job=clamp(S.stats.job+a.job,0,100);
+    if(a.sewCap)S.supply.sewage.capacity=+(S.supply.sewage.capacity+a.sewCap).toFixed(1);
+    if(a.elecCap)S.supply.elec.capacity=+(S.supply.elec.capacity+a.elecCap).toFixed(1);
+    if(a.waterCap)S.supply.water.capacity=+(S.supply.water.capacity+a.waterCap).toFixed(1);
+    if(a.pvIncome){}
+    if(d.unlock==='housing')S.biz.houseAvail=true;
+    if(id==='sewage')S.flags.sewageBuilt=true;
+    S.stats.merit=clamp(S.stats.merit+(d.cost>=400?10:d.cost>=250?7:5),0,999);
+    S.stats.rep+=2;
+    log(d.name+' 竣工投用，'+d.eff+'。');
+    toast('竣工：'+d.name);
+  }else{
+    const h=HOUSE.find(x=>x.id===id);
+    if(h){
+      S.finance.cash+=h.sale-Math.round(h.cost/4);
+      S.stats.price=clamp(S.stats.price+8,0,100);
+      S.stats.merit=clamp(S.stats.merit+4,0,999);
+      log(h.name+' 售罄交付，回款 '+h.sale+'万，房价压力有所抬升。');
+      toast(h.name+' 交付，回款 '+h.sale+'万');
+    }
+  }
+  checkAch();
+}
+/* ---------- 随机事件 ---------- */
+let pendingSettle=false;
+function maybeEvent(){
+  if(S.ended)return;
+  const pool=EVENTS.filter(e=>(!e.months||e.months.includes(S.month))&&!S.works.done.includes(e.id));
+  const all=EVENTS.filter(e=>(!e.months||e.months.includes(S.month)));
+  const src=pool.length?pool:all.filter(e=>!S.works.done.slice(-6).includes(e.id));
+  if(Math.random()>0.38||!src.length)return;
+  const ev=rnd(src);
+  showEvent(ev);
+}
+function showEvent(ev){
+  openDlg(`<div class="eyebrow">第${S.year}年${MONTHS[S.month-1]} · 突发事项</div><h2 class="plain" style="font-size:1.2rem">${esc(ev.title)}</h2><hr class="file-line">
+    <p class="body">${ev.body}</p>
+    <div class="ev-opts">${ev.opts.map((o,i)=>`
+      <div class="ev-opt" onclick="applyEvent('${ev.id}',${i})">
+        <div class="oh">${o.t}</div><div class="od">${o.d}</div><div class="oc">${o.c}</div></div>`).join('')}
+    </div>`,{noClose:true});
+}
+function applyEvent(evId,idx){
+  const ev=EVENTS.find(e=>e.id===evId);
+  const o=ev.opts[idx];
+  if(!S.WorksDone)S.WorksDone=[];
+  S.works.done.push(ev.id);
+  const fx=o.fx||{};
+  const f=S.finance;
+  if(fx.sat)S.stats.sat=clamp(S.stats.sat+fx.sat,0,100);
+  if(fx.rep)S.stats.rep=clamp(S.stats.rep+fx.rep,0,100);
+  if(fx.pros)S.stats.pros=clamp(S.stats.pros+fx.pros,0,100);
+  if(fx.job)S.stats.job=clamp(S.stats.job+fx.job,0,100);
+  if(fx.boss)S.stats.boss=clamp(S.stats.boss+fx.boss,0,100);
+  if(fx.risk)S.stats.risk=clamp(S.stats.risk+fx.risk,0,100);
+  if(fx.clean!==undefined&&fx.clean<0)S.flags.tookGift=true;
+  if(fx.loseBiz&&S.biz.list.length&&Math.random()<0.5){
+    const gone=S.biz.list.pop();
+    const d=BIZ.find(x=>x.id===gone.id);
+    log(d.name+' 迁往邻县，税收 -'+d.tax+'万/月。');toast(d.name+' 迁走了');
+  }
+  let cost=o.cost||0;
+  if(cost>0){
+    if(f.reserve>=cost){f.reserve-=cost;}
+    else if(f.cash+f.reserve>=cost){const use=Math.min(f.cash,cost);f.cash-=use;f.reserve-=(cost-use);}
+    else{f.cash-=cost;}
+  }
+  if(fx.cash){f.cash+=fx.cash;if(fx.clean<0)log('收到一笔说不清来路的「土特产」。');}
+  if(fx.audit==='open'){
+    if(debtRatio()<40&&S.stats.risk<10){S.stats.boss+=5;S.stats.rep+=3;log('审计顺利过关，账目经得起查。');toast('审计过关，上级好感 +5');}
+    else{S.stats.risk=clamp(S.stats.risk+3,0,100);log('审计组提了几条整改意见。');}
+  }
+  if(fx.selfCheck){
+    if(S.supply.sewage.capacity>=S.supply.sewage.demand){S.stats.rep+=4;log('主动报告排污整改，获县里通报表扬。');}
+    else{S.stats.risk=clamp(S.stats.risk+2,0,100);log('自查发现问题，先行整改。');}
+  }
+  if(fx.gamble){
+    if(S.supply.sewage.capacity<S.supply.sewage.demand){S.env.score=clamp(S.env.score-8,0,100);S.stats.risk=clamp(S.stats.risk+8,0,100);log('督查组在云溪河上游取了水样……');toast('环境 -8 · 倒查 +8%','2600');}
+    else{S.stats.rep+=2;log('督查组抽查了三个点位，未发现问题。');}
+  }
+  if(ev.id==='gift'&&fx.clean===1){S.stats.merit+=2;}
+  log('处置「'+ev.title+'」：'+o.t+'。');
+  closeDlg();
+  checkAch();renderAll();saveGame(true);
+}
+/* ---------- 年度考核 ---------- */
+function annualGrade(){
+  const w=S.wind.weights;
+  let score=0,full=0;
+  const parts=[['pros',S.stats.pros],['live',S.stats.live],['sat',S.stats.sat],['env',S.env.score]];
+  parts.forEach(([k,v])=>{if(w[k]){score+=w[k]*v;full+=w[k]*100;}});
+  score=full?score/full*100:S.stats.pros;
+  if(debtRatio()>60)score-=10;if(debtRatio()>100)score-=25;
+  if(S.stats.risk>15)score-=S.stats.risk/2;
+  if(S.stats.unity<40)score-=6;
+  let grade='D';
+  if(score>=88)grade='S';else if(score>=72)grade='A';else if(score>=55)grade='B';else if(score>=42)grade='C';
+  const txt=`综合 ${Math.round(score)} 分（${S.wind.name}权重：繁荣 ${Math.round(S.stats.pros)}、宜居 ${Math.round(S.stats.live)}、满意 ${Math.round(S.stats.sat)}、环境 ${Math.round(S.env.score)}）`;
+  S.grades.push({year:S.year-1,grade,txt});
+  if(grade==='S'){S.stats.merit+=20;S.stats.boss+=10;S.finance.cash+=150;}
+  else if(grade==='A'){S.stats.merit+=15;S.stats.boss+=6;S.finance.cash+=100;}
+  else if(grade==='B'){S.stats.merit+=8;S.finance.cash+=50;}
+  else if(grade==='C'){S.stats.merit+=2;}
+  else{S.stats.merit-=8;S.stats.boss-=8;}
+  log('第'+(S.year-1)+'年度考核：'+grade+' 等（'+txt+'）'+(grade==='S'?'，县里奖励 150万':grade==='A'?'，县里奖励 100万':grade==='B'?'，县里奖励 50万':''));
+  /* 转移支付随经济与人口缓慢增长 */
+  S.finance.transfer=Math.round(S.finance.transfer*1.04+S.biz.list.length*2);
+  if(S.hr.hiring){S.hr.onDuty=Math.min(S.hr.quota,S.hr.onDuty+4);S.hr.hiring=false;log('新招录干部到岗，缓解缺员。');}
+  /* 风向轮换 */
+  S.windYearsLeft--;
+  if(S.windYearsLeft<=0){
+    let next=rnd(WINDS.filter(x=>x.id!==S.wind.id));
+    S.wind=next;S.windYearsLeft=next.years;
+    log('县里调整风向：'+next.name+'。');
+  }
+}
+/* ---------- 结局 ---------- */
+function checkEnding(){
+  /* 倒查 */
+  if(Math.random()*100<S.stats.risk){
+    endGame({
+      title:'一纸处分',
+      body:'巡察组进驻的第三天，你当年那几笔「说不清」的账被人翻了出来。处分文件很短，你的名字在第一行。免职、降级、调离，三十年想走的路，停在云溪河桥头。',
+      kind:'down'
+    });return true;
+  }
+  if(S.env.score<30&&Math.random()<0.2){
+    endGame({
+      title:'生态问责',
+      body:'县里收到卫星图斑与群众举报，云溪河断面连续超标。问责名单第一个就是你。你替山水挨了这一刀，也替自己当年「先上车后补票」的选择签了字。',
+      kind:'down'
+    });return true;
+  }
+  if(debtRatio()>100){
+    endGame({
+      title:'债务风暴',
+      body:'化债任务书压到桌上那天，镇里账上的窟窿终于盖不住了。县里工作组进驻，你成了全县「新官不理旧账」反面教材的第一章。',
+      kind:'down'
+    });return true;
+  }
+  if((S.flags.unpaid||0)>=3){
+    endGame({
+      title:'发不出工资的那个月',
+      body:'连续三个月，工资表批不下来。食堂大姐给你的面里多卧了个蛋，什么也没说。你递了辞职报告，理由那一栏，你写了很久，最后只留下四个字：愧对同僚。',
+      kind:'bad'
+    });return true;
+  }
+  /* 晋升 */
+  const gs=S.grades.filter(g=>g.year>=S.termStartYear);
+  const okGrade=gs.some(g=>g.grade==='S'||g.grade==='A')||S.grades.slice(-2).every(g=>g.grade==='B'||g.grade==='A'||g.grade==='S');
+  if(S.stats.merit>=100&&okGrade&&debtRatio()<=60&&S.env.score>=45&&S.stats.unity>=40&&S.stats.risk<=15){
+    if(S.stats.boss>=70||Math.random()<0.6){
+      S.promoted=true;S.rank=2;
+      endGame({
+        title:'更进一步',
+        body:'组织部考察公告贴出来那天，镇政府院里的梧桐叶正黄。公示期满，你以县处级副职履新副县长，分管全县农业农村。临走那天，敬老院的老人送来一篮鸡蛋，说是自家的鸡下的。你在车上回头看了很久：云溪河的水，比你来的时候清了。',
+        kind:'good'
+      });return true;
+    }
+  }
+  /* 任满 */
+  if(S.year-S.termStartYear+1>S.termYears){
+    endGame({
+      title:'转任二线',
+      body:'任期届满，考核平平稳稳，你被安排到县直部门任副职。交接那天，你把八年的工作日志留在抽屉里，压在最底下那本下面。谁都会记得云溪来过一位镇长，但没人记得他姓什么。',
+      kind:'mid'
+    });return true;
+  }
+  return false;
+}
+function endGame(e){
+  S.ended=true;S.ending=e;
+  pushBoard(e.title);
+  log('任期结束：'+e.title+'。');
+  openDlg(`<div class="eyebrow">任期结算</div><h2>${e.title}</h2><hr class="file-line">
+    <p class="body">${e.body}</p>
+    <div class="end-score">
+      <div class="cell"><h5>政绩</h5><div class="n">${Math.round(S.stats.merit)}</div></div>
+      <div class="cell"><h5>声誉</h5><div class="n">${Math.round(S.stats.rep)}</div></div>
+      <div class="cell"><h5>结余</h5><div class="n">${Math.round(S.finance.cash)}万</div></div>
+      <div class="cell"><h5>环境</h5><div class="n">${Math.round(S.env.score)}</div></div>
+    </div>
+    <div class="dlg-btns"><button class="btn btn-ghost" onclick="closeDlg();switchTab('rank')">看生涯榜</button>
+    <button class="btn btn-main" onclick="closeDlg();restartNow()">再开一局</button></div>`,{noClose:true});
+  saveGame(true);renderAll();
+}
+/* ---------- 开局流程 ---------- */
+function showStartSetup(){
+  openDlg(`<div class="eyebrow">履新准备</div><h2 class="plain" style="font-size:1.3rem">开局设置</h2><hr class="file-line">
+    <div class="field"><label>姓名 <em>必填 · 1–6 个字</em></label>
+      <div class="inline"><input id="inp-name" maxlength="6" value="${esc(randName())}">
+      <button class="btn btn-ghost btn-sm" onclick="$('inp-name').value=randName()">随机</button></div>
+      <div class="err" id="name-err"></div></div>
+    <div class="field"><label>自定义地名 <em>可选 · 均为架空虚构</em></label>
+      <div class="inline"><input id="inp-town" maxlength="4" placeholder="镇名">
+      <input id="inp-county" maxlength="4" placeholder="县名">
+      <input id="inp-prov" maxlength="4" placeholder="省名"></div>
+      <div class="muted" style="margin-top:5px">留空使用默认：云溪镇 · 临州县 · 宁川省</div></div>
+    <div class="dlg-btns"><button class="btn btn-ghost" onclick="closeDlg()">返回</button>
+    <button class="btn btn-main" onclick="confirmStart()">确认 · 领取委任状</button></div>`);
+}
+function confirmStart(){
+  const name=($('inp-name').value||'').trim();
+  if(!name){$('name-err').textContent='总得有个名字，不然任命书没法写。';return;}
+  const clean=v=>(v||'').trim();
+  const places=[clean($('inp-town').value)||DEFAULT_PLACES[0],clean($('inp-county').value)||DEFAULT_PLACES[1],clean($('inp-prov').value)||DEFAULT_PLACES[2]];
+  S=newState(name,places);
+  saveGame(true);
+  closeDlg();
+  showAppointment();
+}
+function showAppointment(){
+  archOrder('appointment','任命文书','中共'+committeeName()+'关于'+S.player+'同志任职的通知',
+    committeeName()+'组干〔第'+S.year+'年〕1号',
+    '经县委研究决定：'+S.player+'同志任中共'+townName()+'委员会委员、副书记，提名为'+townName()+'人民政府镇长候选人。职级：乡科级正职。镇长依法须经镇人民代表大会选举产生。请核清到任账目，逐项回应群众实际困难。',roleName());
+  openDlg(`<div class="eyebrow">任命文书</div><h2>委任状</h2>
+    <p style="text-align:center;font-size:.9rem;color:#5C5340;margin-bottom:6px">中共${committeeName()}关于${esc(S.player)}同志任职的通知</p>
+    <p style="text-align:center;font-size:.78rem;color:#8A7F66">${committeeName()}组干〔第${S.year}年〕1号</p>
+    <hr class="file-line">
+    <p class="body">经县委研究决定：${esc(S.player)}同志任中共${townName()}委员会委员、副书记，提名为${townName()}人民政府镇长候选人。</p>
+    <p class="body">职级：乡科级正职。</p>
+    <p class="body" style="color:#8A7F66;font-size:.85rem">镇长依法须经人民代表大会选举产生。请核清到任账目，逐项回应群众实际困难。</p>
+    <div class="sign"><div class="txt">中共${committeeName()}<br>（组织部代章）<br>第${S.year}年${MONTHS[S.month-1]}</div>${seal('任命文书','组织部')}</div>
+    <div class="dlg-btns"><button class="btn btn-main" onclick="takeOffice()">到任</button></div>`,{noClose:true});
+}
+function takeOffice(){
+  closeDlg();
+  S.appointed=true;S.elected=true;
+  log('当选'+townName()+'镇长。全镇三万一千人，山多田少，账上结余一百六十万。');
+  bootGame();
+}
+function restartNow(){
+  window._ok=()=>{localStorage.removeItem(SAVE_KEY);S=null;closeDlg();$('game').classList.remove('on');$('cover').classList.remove('hide');};
+  confirmDlg('重新开局','当前进度将全部清空，确定要从头来过？',null,'推倒重来');
+}
+function bootGame(){
+  $('cover').classList.add('hide');
+  $('game').classList.add('on');
+  renderAll();
+  saveGame(true);
+}
+/* ================= PWA 安装 ================= */
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  showInstallAvailable();
+});
+function showInstallAvailable(){
+  /* 支持「安装应用」的平台（安卓 Chrome / 桌面）出现提示 */
+  toast('本机支持安装：点「安装到桌面」可像 App 一样使用');
+}
+function doInstall(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(()=>{deferredPrompt=null;});
+    return;
+  }
+  showInstallGuide();
+}
+function showInstallGuide(){
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const andr=/android/i.test(navigator.userAgent);
+  let steps;
+  if(isIOS){
+    steps=[`点浏览器底部中间的「分享」按钮（方框带个向上箭头）`,
+      `在弹出菜单里向下滑，选「添加到主屏幕」`,
+      `点右上角「添加」。桌面出现《为官一任》图标，点开即全屏，离线可玩`];
+  }else if(andr){
+    steps=[`点浏览器右上角「⋮」菜单`,
+      `选「添加到主屏幕」或「安装应用」`,
+      `确认后桌面出现图标，打开即独立窗口，无地址栏`];
+  }else{
+    steps=[`地址栏右侧应有安装图标，点它`,
+      `或点浏览器菜单里的「安装为官一任」`,
+      `安装后从开始菜单/桌面打开，独立窗口运行`];
+  }
+  localStorage.setItem(INSTALL_KEY,'shown');
+  openDlg(`<div class="eyebrow">离线可玩</div><h2 class="plain" style="font-size:1.2rem">把《为官一任》装到桌面</h2><hr class="file-line">
+    <p class="body" style="text-indent:0">安装后从桌面图标直接打开，全屏显示没有地址栏；存档照常保留在本机，断网也能玩。</p>
+    <ul class="plain">${steps.map(s=>`<li>${s}</li>`).join('')}</ul>
+    <div class="dlg-btns"><button class="btn btn-main" onclick="closeDlg()">知道了</button></div>`);
+}
+function hideIosTip(){
+  $('ios-tip').classList.remove('on');
+  localStorage.setItem(INSTALL_KEY,'shown');
+}
+function maybeIosTip(){
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!/crios|fxios/i.test(navigator.userAgent);
+  const standalone=window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches;
+  if(isIOS&&!standalone&&localStorage.getItem(INSTALL_KEY)!=='shown'){
+    setTimeout(()=>{$('ios-tip').classList.add('on')},2600);
+  }
+}
+if('serviceWorker' in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname))){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})});
+}
+/* ================= 启动 ================= */
+$('btn-new').onclick=()=>{showStartSetup();};
+$('btn-load').onclick=()=>{
+  if(!localStorage.getItem(SAVE_KEY)){toast('本机没有存档');return;}
+  if(loadGame()){$('cover').classList.add('hide');$('game').classList.add('on');renderAll();toast('已读取第'+S.year+'年'+MONTHS[S.month-1]+'的存档');}
+  else toast('存档损坏，无法读取');
+};
+$('btn-next').onclick=nextMonth;
+$('btn-save').onclick=()=>saveGame();
+$('btn-export').onclick=exportSave;
+$('btn-import').onclick=()=>$('file-import').click();
+$('file-import').onchange=e=>{if(e.target.files[0])importSave(e.target.files[0]);e.target.value='';};
+$('btn-restart').onclick=restartNow;
+$('btn-install').onclick=doInstall;
+$('btn-install-cover').onclick=doInstall;
+/* 恢复进行中的游戏 */
+if(loadGame()&&!S.ended){
+  $('cover').classList.remove('hide');
+}
+window.addEventListener('beforeunload',()=>{if(S&&!S.ended)saveGame(true);});
+maybeIosTip();
+</script>
+</body>
+</html>
